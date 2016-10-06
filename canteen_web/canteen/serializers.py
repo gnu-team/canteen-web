@@ -8,6 +8,8 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('date', 'creator', 'location', 'type', 'condition')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, queryset=Report.objects.all())
+
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('username', 'email', 'reports')

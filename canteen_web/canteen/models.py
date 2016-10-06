@@ -3,7 +3,7 @@ from django.db import models
 
 class Report(models.Model):
     date = models.DateTimeField('date created')
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, related_name='reports')
     location = models.CharField(max_length=512)
     type = models.CharField(max_length=64)
     condition = models.CharField(max_length=64)
