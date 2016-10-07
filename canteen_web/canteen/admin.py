@@ -1,3 +1,5 @@
 from django.contrib import admin
+from canteen.models import Report, PurityReport
 
-# Register your models here.
+admin.site.register(Report)
+admin.site.register(PurityReport)
