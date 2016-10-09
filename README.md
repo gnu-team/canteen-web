@@ -26,6 +26,10 @@ SQLite database:
 
     $ ./manage.py migrate
 
+Load the default groups into the database:
+
+    $ ./manage.py loaddata groups
+
 And then create an initial administrator:
 
     $ ./manage.py createsuperuser
