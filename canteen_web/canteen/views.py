@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from rest_framework import viewsets, permissions
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -12,7 +12,7 @@ class ReportViewSet(viewsets.ModelViewSet):
     permission_classes = (DjangoModelPermissionsWithView,)
 
     def perform_create(self, serializer):
-        serializer.save(date=datetime.utcnow(), creator=self.request.user)
+        serializer.save(date=datetime.now(timezone.utc), creator=self.request.user)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all();
