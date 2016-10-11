@@ -2,11 +2,26 @@ from django.contrib.auth.models import User
 from django.db import models
 
 class Report(models.Model):
+    TYPE_CHOICES = (
+        (0, 'Bottled'),
+        (1, 'Well'),
+        (2, 'Stream'),
+        (3, 'Lake'),
+        (4, 'Spring'),
+        (5, 'Other'),
+    )
+    CONDITION_CHOICES = (
+        (0, 'Waste'),
+        (1, 'Treatable-Clear'),
+        (2, 'Treatable-Muddy'),
+        (3, 'Potable'),
+    )
+
     date = models.DateTimeField('date created')
     creator = models.ForeignKey(User, related_name='reports')
     location = models.CharField(max_length=512)
-    type = models.CharField(max_length=64)
-    condition = models.CharField(max_length=64)
+    type = models.IntegerField(choices=TYPE_CHOICES)
+    condition = models.IntegerField(choices=CONDITION_CHOICES)
 
     class Meta:
         permissions = (
