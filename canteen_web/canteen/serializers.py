@@ -3,9 +3,11 @@ from canteen.models import Report
 from rest_framework import serializers
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
+    creator_name = serializers.ReadOnlyField(source='creator.username')
+
     class Meta:
         model = Report
-        fields = ('date', 'creator', 'location', 'type', 'condition')
+        fields = ('date', 'creator', 'creator_name', 'location', 'type', 'condition')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, queryset=Report.objects.all())
