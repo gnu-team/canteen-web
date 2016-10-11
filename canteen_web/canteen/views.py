@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import viewsets, permissions
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -9,6 +10,9 @@ class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all().order_by('type');
     serializer_class = ReportSerializer
     permission_classes = (DjangoModelPermissionsWithView,)
+
+    def perform_create(self, serializer):
+        serializer.save(date=datetime.utcnow(), creator=self.request.user)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all();

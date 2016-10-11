@@ -3,6 +3,8 @@ from canteen.models import Report
 from rest_framework import serializers
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
+    date = serializers.ReadOnlyField()
+    creator = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
     creator_name = serializers.ReadOnlyField(source='creator.username')
 
     class Meta:
