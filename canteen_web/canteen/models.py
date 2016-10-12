@@ -29,7 +29,9 @@ class Report(models.Model):
         )
 
     def __str__(self):
-        return '{} {}, {}'.format(self.condition, self.type, self.location)
+        return '{} {}, {}'.format(dict(self.CONDITION_CHOICES)[self.condition],
+                                  dict(self.TYPE_CHOICES)[self.type],
+                                  self.location)
 
 class PurityReport(models.Model):
     date = models.DateTimeField('date created')
