@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from canteen.serializers import ReportSerializer, UserSerializer
-from canteen.permissions import DjangoModelPermissionsWithView
+from canteen.permissions import DjangoModelPermissionsWithView, IsAdminOrPost
 from canteen.models import Report
 
 class ReportViewSet(viewsets.ModelViewSet):
@@ -17,4 +17,4 @@ class ReportViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all();
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (IsAdminOrPost,)
