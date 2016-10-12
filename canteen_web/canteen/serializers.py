@@ -13,7 +13,7 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
-    group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Admins'), write_only=True)
+    group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Administrators'), write_only=True)
     reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, read_only=True)
 
     class Meta:
@@ -25,7 +25,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                                      password=validated_data['password'])
 
         group = validated_data['group']
-        if group == 'Admins':
+        if group == 'Administrators':
             u.is_staff = True
             u.save()
         else:
