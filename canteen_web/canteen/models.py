@@ -30,9 +30,9 @@ class Report(models.Model):
         )
 
     def __str__(self):
-        return '{} {}, {}'.format(dict(self.CONDITION_CHOICES)[self.condition],
+        return '{} {}: {}, {}'.format(dict(self.CONDITION_CHOICES)[self.condition],
                                   dict(self.TYPE_CHOICES)[self.type],
-                                  self.location)
+                                  self.latitude, self.longitude)
 
 class PurityReport(models.Model):
     date = models.DateTimeField('date created')
