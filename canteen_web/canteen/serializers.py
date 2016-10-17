@@ -9,7 +9,7 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Report
-        fields = ('date', 'creator', 'creator_name', 'location', 'type', 'condition')
+        fields = ('date', 'creator', 'creator_name', 'latitude', 'longitude', 'type', 'condition')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})

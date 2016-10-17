@@ -19,7 +19,8 @@ class Report(models.Model):
 
     date = models.DateTimeField('date created')
     creator = models.ForeignKey(User, related_name='reports')
-    location = models.CharField(max_length=512)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     type = models.IntegerField(choices=TYPE_CHOICES)
     condition = models.IntegerField(choices=CONDITION_CHOICES)
 
