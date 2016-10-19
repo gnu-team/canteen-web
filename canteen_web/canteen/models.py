@@ -23,6 +23,7 @@ class Report(models.Model):
     longitude = models.FloatField()
     type = models.IntegerField(choices=TYPE_CHOICES)
     condition = models.IntegerField(choices=CONDITION_CHOICES)
+    description = models.CharField(max_length=256, default='')
 
     class Meta:
         permissions = (
@@ -30,9 +31,10 @@ class Report(models.Model):
         )
 
     def __str__(self):
-        return '{} {}: {}, {}'.format(dict(self.CONDITION_CHOICES)[self.condition],
+        return '{} {}: {}, {}{}'.format(dict(self.CONDITION_CHOICES)[self.condition],
                                   dict(self.TYPE_CHOICES)[self.type],
-                                  self.latitude, self.longitude)
+                                  self.latitude, self.longitude,
+                                  ". " + self.description if self.description else "")
 
 class PurityReport(models.Model):
     date = models.DateTimeField('date created')
