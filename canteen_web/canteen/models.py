@@ -23,7 +23,7 @@ class Report(models.Model):
     longitude = models.FloatField()
     type = models.IntegerField(choices=TYPE_CHOICES)
     condition = models.IntegerField(choices=CONDITION_CHOICES)
-    description = models.CharField(max_length=256, default='')
+    description = models.CharField(max_length=256, default='', blank=True)
 
     class Meta:
         permissions = (
@@ -31,18 +31,27 @@ class Report(models.Model):
         )
 
     def __str__(self):
-        return '{} {}: {}, {}{}'.format(dict(self.CONDITION_CHOICES)[self.condition],
-                                  dict(self.TYPE_CHOICES)[self.type],
-                                  self.latitude, self.longitude,
-                                  ". " + self.description if self.description else "")
+        fmt = '{} {}: {}, {}{}'
+        return fmt.format(dict(self.CONDITION_CHOICES)[self.condition],
+                          dict(self.TYPE_CHOICES)[self.type],
+                          self.latitude, self.longitude,
+                          ". " + self.description if self.description else "")
 
 class PurityReport(models.Model):
+    CONDITION_CHOICES = (
+        (0, 'Safe'),
+        (1, 'Treatable'),
+        (2, 'Unsafe'),
+    )
+
     date = models.DateTimeField('date created')
-    creator = models.ForeignKey(User)
-    location = models.CharField(max_length=512)
-    condition = models.IntegerField()
-    virus_ppm = models.IntegerField()
-    contaminant_ppm = models.IntegerField()
+    creator = models.ForeignKey(User, related_name='purity_reports')
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    virusPPM = models.FloatField('virus PPM')
+    contaminantPPM = models.FloatField('contaminant PPM')
+    condition = models.IntegerField(choices=CONDITION_CHOICES)
+    description = models.CharField(max_length=256, default='', blank=True)
 
     class Meta:
         permissions = (
@@ -50,5 +59,8 @@ class PurityReport(models.Model):
         )
 
     def __str__(self):
-        return '{} {}/{}, {}'.format(self.condition, self.virus_ppm,
-                                     self.contaminant_ppm, self.location)
+        fmt = '{} {}vppm/{}cppm: {}, {}{}'
+        return fmt.format(dict(self.CONDITION_CHOICES)[self.condition],
+                          self.virusPPM, self.contaminantPPM,
+                          self.latitude, self.longitude,
+                          ". " + self.description if self.description else "")

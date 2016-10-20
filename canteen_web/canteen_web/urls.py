@@ -16,10 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
-from canteen.views import ReportViewSet, UserViewSet
+from canteen.views import ReportViewSet, PurityReportViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register('reports', ReportViewSet)
+router.register('purity_reports', PurityReportViewSet)
 router.register('users', UserViewSet)
 
 urlpatterns = [

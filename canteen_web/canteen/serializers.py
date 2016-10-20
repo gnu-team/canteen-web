@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from canteen.models import Report
+from canteen.models import Report, PurityReport
 from rest_framework import serializers
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
@@ -9,7 +9,18 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Report
-        fields = ('date', 'creator', 'creator_name', 'latitude', 'longitude', 'type', 'condition', 'description')
+        fields = ('date', 'creator', 'creator_name', 'latitude', 'longitude',
+                  'type', 'condition', 'description')
+
+class PurityReportSerializer(serializers.HyperlinkedModelSerializer):
+    date = serializers.ReadOnlyField()
+    creator = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
+    creator_name = serializers.ReadOnlyField(source='creator.username')
+
+    class Meta:
+        model = PurityReport
+        fields = ('date', 'creator', 'creator_name', 'latitude', 'longitude',
+                  'virusPPM', 'contaminantPPM', 'condition', 'description')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
