@@ -26,8 +26,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         group = validated_data['group']
         if group == 'Administrators':
-            u.is_staff = True
-            u.save()
+            # Don't do anything for now; granting admin permissions to
+            # anyone is too dangerous
+            pass
         else:
             Group.objects.get(name=group).user_set.add(u)
 
