@@ -3,24 +3,27 @@ from canteen.models import Report, PurityReport
 from rest_framework import serializers
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     date = serializers.ReadOnlyField()
     creator = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
     creator_name = serializers.ReadOnlyField(source='creator.username')
 
     class Meta:
         model = Report
-        fields = ('date', 'creator', 'creator_name', 'latitude', 'longitude',
-                  'type', 'condition', 'description')
+        fields = ('id', 'date', 'creator', 'creator_name', 'latitude',
+                  'longitude', 'type', 'condition', 'description')
 
 class PurityReportSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     date = serializers.ReadOnlyField()
     creator = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
     creator_name = serializers.ReadOnlyField(source='creator.username')
 
     class Meta:
         model = PurityReport
-        fields = ('date', 'creator', 'creator_name', 'latitude', 'longitude',
-                  'virusPPM', 'contaminantPPM', 'condition', 'description')
+        fields = ('id', 'date', 'creator', 'creator_name', 'latitude',
+                  'longitude', 'virusPPM', 'contaminantPPM', 'condition',
+                  'description')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
