@@ -15,16 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework import routers
-from canteen.views import ReportViewSet, PurityReportViewSet, UserViewSet
-
-router = routers.DefaultRouter()
-router.register('reports', ReportViewSet)
-router.register('purity_reports', PurityReportViewSet)
-router.register('users', UserViewSet)
 
 urlpatterns = [
+    url(r'^', include('canteen.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(router.urls)),
     url(r'^api_auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
