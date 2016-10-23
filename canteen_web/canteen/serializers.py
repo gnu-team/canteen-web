@@ -49,3 +49,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             Group.objects.get(name=group).user_set.add(u)
 
         return u
+
+    def update(self, instance, validated_data):
+        new_password = validated_data.pop('password', None)
+
+        if new_password:
+            instance.set_password(new_password)
+
+        return super().update(instance, validated_data)
