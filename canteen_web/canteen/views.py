@@ -27,11 +27,25 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrPost,)
 
-class CurrentUserView(generics.ListAPIView):
-    #queryset = User.objects.all();
+class CurrentUserView(generics.GenericAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def list(self, request):
-        serializer = UserSerializer(self.request.user, context={'request': request})
+    def get(self, request, *args, **kwargs):
+        self.check_permissions(request)
+        serializer = self.get_serializer(request.user)
         return response.Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        self.check_permissions(request)
+
+        partial = kwargs.pop('partial', False)
+        serializer = self.get_serializer(request.user, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return response.Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.put(request, *args, **kwargs)
