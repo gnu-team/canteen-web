@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from rest_framework import viewsets
+from rest_framework import generics, permissions, response, viewsets
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from canteen.serializers import ReportSerializer, PurityReportSerializer, UserSerializer
@@ -26,3 +26,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all();
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrPost,)
+
+class CurrentUserView(generics.ListAPIView):
+    #queryset = User.objects.all();
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def list(self, request):
+        serializer = UserSerializer(self.request.user, context={'request': request})
+        return response.Response(serializer.data)
