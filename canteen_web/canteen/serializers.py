@@ -26,13 +26,15 @@ class PurityReportSerializer(serializers.HyperlinkedModelSerializer):
                   'description')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
     group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Administrators'), write_only=True)
     reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'group', 'reports')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'password', 'group', 'reports')
 
     def create(self, validated_data):
         u = User.objects.create_user(username=validated_data['username'],
