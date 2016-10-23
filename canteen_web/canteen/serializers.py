@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User, Group
 from canteen.models import Report, PurityReport
 from rest_framework import serializers
@@ -27,7 +28,7 @@ class PurityReportSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    password = serializers.CharField(write_only=True, validators=(validate_password,), style={'input_type': 'password'})
     group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Administrators'), write_only=True)
     reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, read_only=True)
 
