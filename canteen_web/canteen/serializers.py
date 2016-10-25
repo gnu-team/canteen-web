@@ -1,6 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User, Group
-from canteen.models import Report, PurityReport
+from canteen.models import Report, PurityReport, Profile
 from rest_framework import serializers
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
@@ -29,7 +29,7 @@ class PurityReportSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
     password = serializers.CharField(write_only=True, validators=(validate_password,), style={'input_type': 'password'})
-    group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Administrators'), write_only=True)
+    group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Administrators'), source='profile.get_group')
     reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, read_only=True)
 
     class Meta:
@@ -40,14 +40,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         u = User.objects.create_user(username=validated_data['username'],
                                      password=validated_data['password'])
-
-        group = validated_data['group']
-        if group == 'Administrators':
-            # Don't do anything for now; granting admin permissions to
-            # anyone is too dangerous
-            pass
-        else:
-            Group.objects.get(name=group).user_set.add(u)
+        profile = Profile.objects.create(user=u)
+        profile.set_group(validated_data['profile']['get_group'])
+        profile.save()
 
         return u
 
@@ -56,5 +51,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         if new_password:
             instance.set_password(new_password)
+
+        # XXX Make this less horrible
+        new_profile = validated_data.pop('profile', None)
+        new_group = validated_data.pop('get_group', None) if new_profile else None
+
+        if new_group:
+            instance.profile.set_group(new_group)
 
         return super().update(instance, validated_data)

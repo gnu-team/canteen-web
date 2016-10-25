@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 
 class Report(models.Model):
@@ -64,3 +64,26 @@ class PurityReport(models.Model):
                           self.virusPPM, self.contaminantPPM,
                           self.latitude, self.longitude,
                           ". " + self.description if self.description else "")
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=64, blank=True)
+    address = models.CharField(max_length=512, blank=True)
+    bio = models.TextField(blank=True)
+
+    def get_group(self):
+        if self.user.is_superuser:
+            return 'Administrators'
+        else:
+            # For now, assume user is in only one group
+            # XXX Don't
+            group = self.user.groups.first()
+            return group.name if group else None
+
+    def set_group(self, group):
+        if group == 'Administrators':
+            # Don't do anything for now; granting admin permissions to
+            # anyone is too dangerous
+            pass
+        else:
+            Group.objects.get(name=group).user_set.add(self.user)
