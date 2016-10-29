@@ -1,6 +1,12 @@
 # SQLite databases
 *.sqlite3
 
+# Secret Django keys
+secret_key
+
+# List of allowed Host headers
+hosts
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -15,18 +15,26 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+def readfile(name):
+    """
+    Return the whitespace-stripped contents of a file inside BASE_DIR
+    """
+    with open(os.path.join(BASE_DIR, name)) as f:
+        return f.read().strip()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+try:
+    ALLOWED_HOSTS = readfile('hosts').split()
+except FileNotFoundError:
+    ALLOWED_HOSTS = []
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '8!3s9h=6wr5h50li@m2gku)*78khz-lft3t%wo+*g1f3g47rn^'
+# Disable debug mode if the hosts file exists and is nonempty
+DEBUG = not bool(ALLOWED_HOSTS)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Where to collect static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-ALLOWED_HOSTS = []
-
+# Read secret key from a separate file with stricter permissions
+SECRET_KEY = readfile('secret_key')
 
 # Application definition
 
