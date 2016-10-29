@@ -70,3 +70,33 @@ per line. This will disable debug mode.
 Now, start the uwsgi server:
 
     $ ./run.sh
+
+Next, you'll need to configure your HTTP server to serve the static
+files directory at `/static/` and proxy `/` to the uwsgi server. I use
+nginx configuration roughly along the lines of the following:
+
+    server {
+            listen 443 ssl;
+            listen [::]:443 ssl;
+
+            server_name canteen-water.org www.canteen-water.org;
+
+            location / {
+                    uwsgi_pass unix:///path/to/canteen/canteen_web/sock;
+                    include uwsgi_params;
+
+            }
+
+            location /static/ {
+                    alias /path/to/canteen/canteen_web/static/;
+            }
+    }
+
+Notice that it accepts only HTTPS connections. This is intentional — the
+client currently sends passwords in plaintext with every request, so
+using straight HTTP should be avoided at all costs. A [Let's Encrypt][1]
+certificate is free and supported by Java [starting with 8u101][2], so I
+use one.
+
+[1]: https://letsencrypt.org/
+[2]: http://stackoverflow.com/a/34111150/321301
