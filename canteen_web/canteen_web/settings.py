@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'canteen',
+    'canteen_api',
+    'canteen_browser',
     'rest_framework',
 ]
 
