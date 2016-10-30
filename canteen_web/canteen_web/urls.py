@@ -18,6 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^api/', include('canteen_api.urls')),
+    url(r'^', include('canteen_browser.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^api_auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
