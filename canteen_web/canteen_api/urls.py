@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from rest_framework import routers
-from canteen.views import ReportViewSet, PurityReportViewSet, UserViewSet, CurrentUserView
+from canteen_api.views import ReportViewSet, PurityReportViewSet, UserViewSet, CurrentUserView
 
 router = routers.DefaultRouter()
 router.register('reports', ReportViewSet)
