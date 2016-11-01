@@ -49,3 +49,14 @@ class CurrentUserView(generics.GenericAPIView):
     def patch(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.put(request, *args, **kwargs)
+
+class NearbyPurityReportsView(generics.ListAPIView):
+    serializer_class = PurityReportSerializer
+    permission_classes = (permissions.DjangoModelPermissions,)
+
+    def get_queryset(self):
+        urlComponents = self.request.resolver_match.kwargs
+        latitude = float(urlComponents['latitude'])
+        longitude = float(urlComponents['longitude'])
+
+        return PurityReport.objects.filter(latitude=float(latitude), longitude=float(longitude))
