@@ -11,30 +11,44 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from configparser import ConfigParser
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def readfile(name):
-    """
-    Return the whitespace-stripped contents of a file inside BASE_DIR
-    """
-    with open(os.path.join(BASE_DIR, name)) as f:
-        return f.read().strip()
+cfg = ConfigParser(interpolation=None)
+if not cfg.read(os.path.join(BASE_DIR, 'config.ini')):
+    raise FileNotFoundError('config.ini does not exist. Please create it as described in the README')
 
-try:
-    ALLOWED_HOSTS = readfile('hosts').split()
-except FileNotFoundError:
+SECRET_KEY = cfg['secrets']['secret_key']
+
+if 'production' in cfg:
+    ALLOWED_HOSTS = cfg['production']['hosts'].split()
+else:
     ALLOWED_HOSTS = []
 
-# Disable debug mode if the hosts file exists and is nonempty
+# Disable debug mode if the hosts setting exists and is nonempty
 DEBUG = not bool(ALLOWED_HOSTS)
 
 # Where to collect static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Read secret key from a separate file with stricter permissions
-SECRET_KEY = readfile('secret_key')
+# Configure SMTP if [mail] section exists in config.ini
+if 'mail' in cfg:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+    sec = cfg['mail']
+    EMAIL_HOST = sec['host']
+    EMAIL_PORT = sec.get('port', None)
+    # SSL connection (implicit)
+    EMAIL_USE_SSL = sec.get('use_ssl', None)
+    # STARTTLS (explicit)
+    EMAIL_USE_TLS = sec.get('use_tls', None)
+    EMAIL_HOST_USER = sec['user']
+    EMAIL_HOST_PASSWORD = sec['password']
+else:
+    # If not configured (development), print emails to the console
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Application definition
 

@@ -31,9 +31,10 @@ Run `init.sh`, which will do some setup for you:
 
 #### Option 2: By hand
 
-Generate a secret key:
+Create an initial `config.ini`, populating it with a new secret key:
 
-    $ python3 -c "import os, string; pop = string.ascii_letters + string.punctuation + string.digits; print(''.join(pop[int(x/256 * len(pop))] for x in os.urandom(512)), end='')" >secret_key
+    $ printf '[secrets]\nsecret_key = ' >config.ini
+    $ python3 -c "import os, string; pop = string.ascii_letters + string.punctuation + string.digits; print(''.join(pop[int(x/256 * len(pop))] for x in os.urandom(512)))" >>config.ini
 
 Now, run the following to initialize the SQLite database:
 
@@ -61,11 +62,10 @@ And visit <http://localhost:8000/>.
 
 ### Deployment
 
-Follow the steps above (including the virtualenv step) and then create a file
-in `canteen_web` named `hosts` with allowed values for the `Host` header, one
-per line. This will disable debug mode.
-
-    $ printf 'canteen-water.org\nwww.canteen-water.org' >hosts
+Follow the steps above (including the virtualenv step) and then change
+the `host` key in the `[production]` section of `config.ini` to the
+allowed values for the `Host` header as described below. This will
+disable debug mode.
 
 Now, start the uwsgi server:
 
@@ -97,6 +97,28 @@ client currently sends passwords in plaintext with every request, so
 using straight HTTP should be avoided at all costs. A [Let's Encrypt][1]
 certificate is free and supported by Java [starting with 8u101][2], so I
 use one.
+
+Configuration
+-------------
+
+`canteen_web/config.ini` should contain something like the following:
+
+    [secrets]
+    secret_key = xxx
+
+    ; Below this point is optional but needed in deployment
+
+    [production]
+    hosts = canteen-water.org www.canteen-water.org
+
+    [mail]
+    host = mail.mymail.com
+    port = 25
+    use_ssl = false ; Implicit SSL
+    use_tls = true  ; STARTTLS
+    user = account@canteen-water.org
+    password = hunter2
+
 
 [1]: https://letsencrypt.org/
 [2]: http://stackoverflow.com/a/34111150/321301

@@ -8,7 +8,8 @@
 
 # See README.md for explanation of what these commands do
 
-python3 -c "import os, string; pop = string.ascii_letters + string.punctuation + string.digits; print(''.join(pop[int(x/256 * len(pop))] for x in os.urandom(512)), end='')" >secret_key && \
+printf '[secrets]\nsecret_key = ' >config.ini && \
+python3 -c "import os, string; pop = string.ascii_letters + string.punctuation + string.digits; print(''.join(pop[int(x/256 * len(pop))] for x in os.urandom(512)))" >>config.ini && \
 ./manage.py migrate && \
 ./manage.py loaddata groups && \
 ./manage.py createsuperuser && \
