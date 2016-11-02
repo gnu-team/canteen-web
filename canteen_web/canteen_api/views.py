@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from rest_framework import generics, permissions, response, viewsets
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.utils.dateparse import parse_date
 from canteen.models import Report, PurityReport
 from canteen_api.permissions import DjangoModelPermissionsWithView, IsAdminOrPost
 from canteen_api.serializers import ReportSerializer, PurityReportSerializer, UserSerializer
@@ -56,7 +57,33 @@ class NearbyPurityReportsView(generics.ListAPIView):
 
     def get_queryset(self):
         urlComponents = self.request.resolver_match.kwargs
-        latitude = float(urlComponents['latitude'])
-        longitude = float(urlComponents['longitude'])
+        filter_ = dict(
+            latitude = float(urlComponents['latitude']),
+            longitude = float(urlComponents['longitude'])
+        )
 
-        return PurityReport.objects.filter(latitude=float(latitude), longitude=float(longitude))
+        # Parse a date from ISO 8601 form (YYYY-MM-DD) into a
+        # timezone-aware UTC datetime. parse_date() is a Django utility
+        # method that returns a datetime.date, which we can convert into
+        # a timezone-aware datetime.datetime marked to use UTC. This is
+        # necessary because unlike datetime.datetime objects, plain
+        # date.date objects apparently have no tzdata, which is
+        # annoying.
+        getdate = lambda iso8601: datetime(*parse_date(iso8601).timetuple()[:3],
+                                           tzinfo=timezone.utc)
+
+        # If specified in the querystring, use startDate and endDate to
+        # limit reports specified to an inclusive calendar-date range.
+        # Since datetime objects describe an instant in time, not a
+        # calendar day, some thought is required here.
+        if 'startDate' in self.request.GET:
+            # Limit results to reports posted at or after the instant
+            # this datetime represents
+            filter_['date__gte'] = getdate(self.request.GET['startDate'])
+        if 'endDate' in self.request.GET:
+            # Limit results to reports posted before the first instant
+            # of the day after the given end date (this makes the end
+            # date inclusive)
+            filter_['date__lt'] = getdate(self.request.GET['endDate']) + timedelta(days=1)
+
+        return PurityReport.objects.filter(**filter_)
