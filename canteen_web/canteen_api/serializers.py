@@ -31,11 +31,17 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(write_only=True, validators=(validate_password,), style={'input_type': 'password'})
     group = serializers.ChoiceField(('Users', 'Workers', 'Managers', 'Administrators'), source='profile.get_group')
     reports = serializers.HyperlinkedRelatedField(view_name='report-detail', many=True, read_only=True)
+    # Profile attributes stored in the 1:1 Profile model rather than the
+    # default Django User model
+    phone = serializers.CharField(source='profile.phone', allow_blank=True, required=False)
+    address = serializers.CharField(source='profile.address', allow_blank=True, required=False)
+    bio = serializers.CharField(source='profile.bio', allow_blank=True, required=False)
 
     class Meta:
         model = User
+        _profile_fields = ('phone', 'address', 'bio')
         fields = ('id', 'username', 'first_name', 'last_name', 'email',
-                  'password', 'group', 'reports')
+                  'password', 'group', 'reports') + _profile_fields
 
     def create(self, validated_data):
         u = User.objects.create_user(username=validated_data['username'],
@@ -54,9 +60,14 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         # XXX Make this less horrible
         new_profile = validated_data.pop('profile', None)
-        new_group = validated_data.pop('get_group', None) if new_profile else None
+        if new_profile:
+            if 'get_group' in new_profile:
+                instance.profile.set_group(new_profile['get_group'])
 
-        if new_group:
-            instance.profile.set_group(new_group)
+            for attr in self.Meta._profile_fields:
+                if attr in new_profile:
+                    setattr(instance.profile, attr, new_profile[attr])
+
+            instance.profile.save()
 
         return super().update(instance, validated_data)
