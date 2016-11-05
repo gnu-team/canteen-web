@@ -106,7 +106,18 @@ Configuration
     [secrets]
     secret_key = xxx
 
+    ; Without this [db] section, sqlite will be used
+    [db]
+    engine = postgresql
+    name = canteen
+    user = canteen
+    password = hunter2
+    host = localhost
+    port = 1234
+
+    ;
     ; Below this point is optional but needed in deployment
+    ;
 
     [production]
     hosts = canteen-water.org www.canteen-water.org

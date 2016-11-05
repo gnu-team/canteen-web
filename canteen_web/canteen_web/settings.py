@@ -50,6 +50,28 @@ else:
     # If not configured (development), print emails to the console
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Database
+# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+
+if 'db' in cfg:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.' + cfg['db']['engine'],
+            'NAME': cfg['db'].get('name', None),
+            'USER': cfg['db'].get('user', None),
+            'PASSWORD': cfg['db'].get('password', None),
+            'HOST': cfg['db'].get('host', None),
+            'PORT': cfg['db'].get('port', None),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -99,17 +121,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'canteen_web.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 
 # Password validation
