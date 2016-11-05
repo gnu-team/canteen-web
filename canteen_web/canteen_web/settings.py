@@ -54,9 +54,14 @@ else:
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 if 'db' in cfg:
+    # GeoDjango db backend modules are named for the spatial db plugins for
+    # nonspatial dbs, so map postgresql and sqlite3 to the names of their
+    # respective plugins.
+    engine = {'postgresql':'postgis','sqlite3':'spatialite'}.get(cfg['db']['engine'], cfg['db']['engine']),
+
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.' + cfg['db']['engine'],
+            'ENGINE': 'django.contrib.gis.db.backends.' + engine,
             'NAME': cfg['db'].get('name', None),
             'USER': cfg['db'].get('user', None),
             'PASSWORD': cfg['db'].get('password', None),
