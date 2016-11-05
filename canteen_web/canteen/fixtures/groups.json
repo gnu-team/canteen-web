@@ -1,40 +1,85 @@
 [
  {
   "model": "auth.group",
-  "pk": 1,
   "fields": {
    "name": "Users",
    "permissions": [
-    19,
-    22
+    [
+     "add_report",
+     "canteen",
+     "report"
+    ],
+    [
+     "view_report",
+     "canteen",
+     "report"
+    ]
    ]
   }
  },
  {
   "model": "auth.group",
-  "pk": 2,
   "fields": {
    "name": "Workers",
    "permissions": [
-    26,
-    19,
-    29,
-    22
+    [
+     "add_purityreport",
+     "canteen",
+     "purityreport"
+    ],
+    [
+     "view_purityreport",
+     "canteen",
+     "purityreport"
+    ],
+    [
+     "add_report",
+     "canteen",
+     "report"
+    ],
+    [
+     "view_report",
+     "canteen",
+     "report"
+    ]
    ]
   }
  },
  {
   "model": "auth.group",
-  "pk": 3,
   "fields": {
    "name": "Managers",
    "permissions": [
-    26,
-    19,
-    22,
-    28,
-    29,
-    21
+    [
+     "add_purityreport",
+     "canteen",
+     "purityreport"
+    ],
+    [
+     "delete_purityreport",
+     "canteen",
+     "purityreport"
+    ],
+    [
+     "view_purityreport",
+     "canteen",
+     "purityreport"
+    ],
+    [
+     "add_report",
+     "canteen",
+     "report"
+    ],
+    [
+     "delete_report",
+     "canteen",
+     "report"
+    ],
+    [
+     "view_report",
+     "canteen",
+     "report"
+    ]
    ]
   }
  }
