@@ -1,30 +1,46 @@
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User, Group
-from canteen.models import Report, PurityReport, Profile
+from django.contrib.gis.geos import Point
 from rest_framework import serializers
+from canteen.models import Report, PurityReport, Profile
 
-class ReportSerializer(serializers.HyperlinkedModelSerializer):
+class BaseReportSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
     date = serializers.ReadOnlyField()
     creator = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
     creator_name = serializers.ReadOnlyField(source='creator.username')
+    latitude = serializers.FloatField(source='loc.get_y')
+    longitude = serializers.FloatField(source='loc.get_x')
 
+    class Meta:
+        fields = ('id', 'date', 'creator', 'creator_name', 'latitude',
+                  'longitude', 'description')
+
+    def create(self, validated_data):
+        validated_data['loc'] = Point(validated_data['loc']['get_x'],
+                                      validated_data['loc']['get_y'])
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if 'loc' in validated_data:
+            new_loc = Point(*instance.loc.get_coords())
+            if 'get_x' in validated_data['loc']:
+                new_loc.set_x(validated_data['loc']['get_x'])
+            if 'get_y' in validated_data['loc']:
+                new_loc.set_y(validated_data['loc']['get_y'])
+            validated_data['loc'] = new_loc
+
+        return super().update(instance, validated_data)
+
+class ReportSerializer(BaseReportSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Report
-        fields = ('id', 'date', 'creator', 'creator_name', 'latitude',
-                  'longitude', 'type', 'condition', 'description')
+        fields = BaseReportSerializer.Meta.fields + ('type', 'condition')
 
-class PurityReportSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
-    date = serializers.ReadOnlyField()
-    creator = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
-    creator_name = serializers.ReadOnlyField(source='creator.username')
-
+class PurityReportSerializer(BaseReportSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PurityReport
-        fields = ('id', 'date', 'creator', 'creator_name', 'latitude',
-                  'longitude', 'virusPPM', 'contaminantPPM', 'condition',
-                  'description')
+        fields = BaseReportSerializer.Meta.fields + ('virusPPM', 'contaminantPPM', 'condition')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
