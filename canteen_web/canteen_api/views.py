@@ -3,6 +3,7 @@ from rest_framework import generics, permissions, response, viewsets
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.utils.dateparse import parse_date
+from django.contrib.gis.geos import Point
 from canteen.models import Report, PurityReport
 from canteen_api.permissions import DjangoModelPermissionsWithView, IsAdminOrPost
 from canteen_api.serializers import ReportSerializer, PurityReportSerializer, UserSerializer
@@ -52,15 +53,13 @@ class CurrentUserView(generics.GenericAPIView):
         return self.put(request, *args, **kwargs)
 
 class NearbyPurityReportsView(generics.ListAPIView):
+    NEARBY_METERS = 1500
     serializer_class = PurityReportSerializer
     permission_classes = (permissions.DjangoModelPermissions,)
 
     def get_queryset(self):
         urlComponents = self.request.resolver_match.kwargs
-        filter_ = dict(
-            latitude = float(urlComponents['latitude']),
-            longitude = float(urlComponents['longitude'])
-        )
+        point = Point(float(urlComponents['longitude']), float(urlComponents['latitude']))
 
         # Parse a date from ISO 8601 form (YYYY-MM-DD) into a
         # timezone-aware UTC datetime. parse_date() is a Django utility
@@ -86,4 +85,4 @@ class NearbyPurityReportsView(generics.ListAPIView):
             # date inclusive)
             filter_['date__lt'] = getdate(self.request.GET['endDate']) + timedelta(days=1)
 
-        return PurityReport.objects.filter(**filter_)
+        return PurityReport.objects.filter(loc__dwithin=(point, self.NEARBY_METERS))
