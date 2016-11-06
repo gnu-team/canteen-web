@@ -33,7 +33,7 @@ class Report(models.Model):
         fmt = '{} {}: {}, {}{}'
         return fmt.format(dict(self.CONDITION_CHOICES)[self.condition],
                           dict(self.TYPE_CHOICES)[self.type],
-                          self.latitude, self.longitude,
+                          self.loc.get_y(), self.loc.get_x(),
                           ". " + self.description if self.description else "")
 
 class PurityReport(models.Model):
@@ -60,7 +60,7 @@ class PurityReport(models.Model):
         fmt = '{} {}vppm/{}cppm: {}, {}{}'
         return fmt.format(dict(self.CONDITION_CHOICES)[self.condition],
                           self.virusPPM, self.contaminantPPM,
-                          self.latitude, self.longitude,
+                          self.loc.get_y(), self.loc.get_x(),
                           ". " + self.description if self.description else "")
 
 class Profile(models.Model):
