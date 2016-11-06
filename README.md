@@ -19,9 +19,26 @@ And finally, install the required packages:
 
     $ pip install -r requirements.txt
 
+### Installing PostgreSQL+PostGIS
+
+`canteen-web` requires [PostgreSQL][3] and [PostGIS][4] since we use
+PostGIS-specific functionality. On Debian Jessie, I did roughly the following:
+
+ 1. Installed `postgresql`, `postgis`, and `postgresql-9.4-postgis-2.1`
+ 2. `sudo -u postgres createuser austin`
+ 3. `sudo -u postgres createdb -O austin canteen`
+
+I then wrote the following as my `[db]` section in `config.ini` (see below):
+
+    [db]
+    engine=postgresql
+    name=canteen
+
 ### Django project
 
-In the `canteen_web` directory, do one of the following:
+Before going any further, in `canteen_web`, you must copy `config.example.ini`
+to `config.ini` and update the `[db]` section as needed. Next, do one of the
+following:
 
 #### Option 1: `init.sh`
 
@@ -31,9 +48,9 @@ Run `init.sh`, which will do some setup for you:
 
 #### Option 2: By hand
 
-Create an initial `config.ini`, populating it with a new secret key:
+Append a new secret key to `config.ini`:
 
-    $ printf '[secrets]\nsecret_key = ' >config.ini
+    $ printf '\n[secrets]\nsecret_key = ' >>config.ini
     $ python3 -c "import os, string; pop = string.ascii_letters + string.punctuation + string.digits; print(''.join(pop[int(x/256 * len(pop))] for x in os.urandom(512)))" >>config.ini
 
 Now, run the following to initialize the SQLite database:
@@ -101,35 +118,10 @@ use one.
 Configuration
 -------------
 
-`canteen_web/config.ini` should contain something like the following:
-
-    [secrets]
-    secret_key = xxx
-
-    ; Without this [db] section, sqlite will be used
-    [db]
-    engine = postgresql
-    name = canteen
-    user = canteen
-    password = hunter2
-    host = localhost
-    port = 1234
-
-    ;
-    ; Below this point is optional but needed in deployment
-    ;
-
-    [production]
-    hosts = canteen-water.org www.canteen-water.org
-
-    [mail]
-    host = mail.mymail.com
-    port = 25
-    use_ssl = false ; Implicit SSL
-    use_tls = true  ; STARTTLS
-    user = account@canteen-water.org
-    password = hunter2
-
+See `canteen_web/config.example.ini`, which you should copy to
+`canteen_web/config.ini` and change as needed.
 
 [1]: https://letsencrypt.org/
 [2]: http://stackoverflow.com/a/34111150/321301
+[3]: https://www.postgresql.org/
+[4]: http://postgis.net/
