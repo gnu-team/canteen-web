@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from django.db import models
+from django.contrib.gis.db import models
 
 class Report(models.Model):
     TYPE_CHOICES = (
@@ -19,8 +19,7 @@ class Report(models.Model):
 
     date = models.DateTimeField('date created')
     creator = models.ForeignKey(User, related_name='reports')
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    loc = models.PointField('location', geography=True)
     type = models.IntegerField(choices=TYPE_CHOICES)
     condition = models.IntegerField(choices=CONDITION_CHOICES)
     description = models.CharField(max_length=256, default='', blank=True)
@@ -46,8 +45,7 @@ class PurityReport(models.Model):
 
     date = models.DateTimeField('date created')
     creator = models.ForeignKey(User, related_name='purity_reports')
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    loc = models.PointField('location', geography=True)
     virusPPM = models.FloatField('virus PPM')
     contaminantPPM = models.FloatField('contaminant PPM')
     condition = models.IntegerField(choices=CONDITION_CHOICES)

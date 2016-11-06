@@ -52,30 +52,22 @@ else:
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+#
+# GeoDjango db backend modules are named for the spatial db plugins for
+# nonspatial dbs, so map postgresql and sqlite3 to the names of their
+# respective plugins.
+engine = {'postgresql':'postgis','sqlite3':'spatialite'}.get(cfg['db']['engine'], cfg['db']['engine'])
 
-if 'db' in cfg:
-    # GeoDjango db backend modules are named for the spatial db plugins for
-    # nonspatial dbs, so map postgresql and sqlite3 to the names of their
-    # respective plugins.
-    engine = {'postgresql':'postgis','sqlite3':'spatialite'}.get(cfg['db']['engine'], cfg['db']['engine']),
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.' + engine,
-            'NAME': cfg['db'].get('name', None),
-            'USER': cfg['db'].get('user', None),
-            'PASSWORD': cfg['db'].get('password', None),
-            'HOST': cfg['db'].get('host', None),
-            'PORT': cfg['db'].get('port', None),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.' + engine,
+        'NAME': cfg['db'].get('name', None),
+        'USER': cfg['db'].get('user', None),
+        'PASSWORD': cfg['db'].get('password', None),
+        'HOST': cfg['db'].get('host', None),
+        'PORT': cfg['db'].get('port', None),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+}
 
 # Application definition
 
