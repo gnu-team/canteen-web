@@ -1,7 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
   <head>
     <title>{% block title %}{% endblock %} &#8226; Canteen</title>
+
+    <!-- css -->
+    <link href="{% static "/canteen_browser/bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <!-- js -->
+    <script src="{% static "/canteen_browser/jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static "/canteen_browser/bootstrap/dist/js/bootstrap.min.js" %}"></script>
   </head>
   <body>
     <header>

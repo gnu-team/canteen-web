@@ -1,0 +1,21 @@
+{
+  "name": "canteen-browser",
+  "homepage": "https://github.com/gnu-team/canteen-web",
+  "authors": [
+    "Austin Adams <git@austinjadams.com>"
+  ],
+  "description": "Canteen Browser Interface",
+  "main": "",
+  "license": "AGPLv3",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}

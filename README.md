@@ -4,6 +4,12 @@ Canteen Web Backend
 Getting started
 ---------------
 
+### Installing `bower` packages
+
+Change to the `canteen_web/canteen_browser` directory and run:
+
+    $ bower install
+
 ### Setting up virtualenv
 
 The first time after cloning the repository, create the virtualenv:
