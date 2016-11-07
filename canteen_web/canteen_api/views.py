@@ -60,6 +60,9 @@ class NearbyPurityReportsView(generics.ListAPIView):
     def get_queryset(self):
         urlComponents = self.request.resolver_match.kwargs
         point = Point(float(urlComponents['longitude']), float(urlComponents['latitude']))
+        filter_ = dict(
+            loc__dwithin=(point, self.NEARBY_METERS),
+        )
 
         # Parse a date from ISO 8601 form (YYYY-MM-DD) into a
         # timezone-aware UTC datetime. parse_date() is a Django utility
@@ -85,4 +88,4 @@ class NearbyPurityReportsView(generics.ListAPIView):
             # date inclusive)
             filter_['date__lt'] = getdate(self.request.GET['endDate']) + timedelta(days=1)
 
-        return PurityReport.objects.filter(loc__dwithin=(point, self.NEARBY_METERS))
+        return PurityReport.objects.filter(**filter_)
