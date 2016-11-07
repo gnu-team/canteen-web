@@ -41,9 +41,9 @@ if 'mail' in cfg:
     EMAIL_HOST = sec['host']
     EMAIL_PORT = sec.get('port', None)
     # SSL connection (implicit)
-    EMAIL_USE_SSL = sec.get('use_ssl', None)
+    EMAIL_USE_SSL = sec.get('use_ssl', '').lower() == 'true'
     # STARTTLS (explicit)
-    EMAIL_USE_TLS = sec.get('use_tls', None)
+    EMAIL_USE_TLS = sec.get('use_tls', '').lower() == 'true'
     EMAIL_HOST_USER = sec['user']
     EMAIL_HOST_PASSWORD = sec['password']
 else:
