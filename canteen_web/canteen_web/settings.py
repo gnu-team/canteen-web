@@ -17,6 +17,8 @@ from configparser import ConfigParser
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 cfg = ConfigParser(interpolation=None)
+# Preserve case
+cfg.optionxform = str
 if not cfg.read(os.path.join(BASE_DIR, 'config.ini')):
     raise FileNotFoundError('config.ini does not exist. Please create it as described in the README')
 
@@ -49,6 +51,10 @@ if 'mail' in cfg:
 else:
     # If not configured (development), print emails to the console
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email error messages to the configured addresses
+if 'admins' in cfg:
+    ADMINS = [ (name, addr) for name, addr in cfg['admins'].items() ]
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
