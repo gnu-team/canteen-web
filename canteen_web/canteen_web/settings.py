@@ -56,6 +56,11 @@ else:
 if 'admins' in cfg:
     ADMINS = [ (name, addr) for name, addr in cfg['admins'].items() ]
 
+if 'gmaps' in cfg:
+    GMAPS_API_KEY = cfg['gmaps']['api_key']
+else:
+    GMAPS_API_KEY = None
+
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 #
@@ -119,9 +124,15 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },
+]
+
+# Allow templates to access these settings keys
+SETTINGS_EXPORT = [
+    'GMAPS_API_KEY',
 ]
 
 WSGI_APPLICATION = 'canteen_web.wsgi.application'

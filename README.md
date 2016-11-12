@@ -44,8 +44,8 @@ I then wrote the following as my `[db]` section in `config.ini` (see below):
 ### Django project
 
 Before going any further, in `canteen_web`, you must copy `config.example.ini`
-to `config.ini` and update the `[db]` section as needed. Next, do one of the
-following:
+to `config.ini` and update the `[db]` and `[gmaps]` sections as needed. Next,
+do one of the following:
 
 #### Option 1: `init.sh`
 

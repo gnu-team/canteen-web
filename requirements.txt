@@ -1,6 +1,7 @@
 Django==1.10.1
 Markdown==2.6.7
 django-filter==0.15.0
+django-settings-export==1.2.1
 djangorestframework==3.4.7
 uWSGI==2.0.14
 psycopg2==2.6.2

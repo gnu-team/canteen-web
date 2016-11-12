@@ -5,11 +5,11 @@
 
     <title>{% block title %}{% endblock %} &#8226; Canteen</title>
 
-    <!-- css -->
     <link href="{% static "/canteen_browser/bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    {% block styles %}{% endblock %}
   </head>
   <body>
-    <nav class="navbar navbar-default">
+    <nav id="nav" class="navbar navbar-default">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -30,11 +30,10 @@
         </div>
       </div>
     </nav>
-    <div class="container">
-      {% block content %}{% endblock %}
-    </div>
+    {% block content %}{% endblock %}
     <script src="{% static "/canteen_browser/jquery/dist/jquery.min.js" %}"></script>
     <script src="{% static "/canteen_browser/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>
 <!-- vim: set ts=2 sw=2 et : -->

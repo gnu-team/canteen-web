@@ -1,3 +1,50 @@
 {% extends "canteen_browser/base.html" %}
 {% block title %}Map{% endblock %}
-{% block content %}insert map here{% endblock %}
+{% block content %}
+    {% if settings.GMAPS_API_KEY %}
+        <div id="map" />
+    {% else %}
+        <div class="container">
+            No Google Maps API keys configured.
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block styles %}
+    <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-flow: column;
+        }
+        #nav {
+            /* Remove blank between map and navigation */
+            margin-bottom: 0;
+            flex: 0 1 auto;
+        }
+        #map {
+            /* Fill up as much of the page as possible */
+            flex: 1 1 auto;
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    {% if settings.GMAPS_API_KEY %}
+        <script>
+            var GEORGIA_TECH_LAT = 33.779;
+            var GEORGIA_TECH_LONG = -84.398;
+            var GEORGIA_TECH_ZOOM = 15;
+
+            function initMap() {
+                var map = new google.maps.Map($('#map')[0], {
+                    zoom: GEORGIA_TECH_ZOOM,
+                    center: { lat: GEORGIA_TECH_LAT, lng: GEORGIA_TECH_LONG }
+                });
+            }
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ settings.GMAPS_API_KEY }}&callback=initMap"></script>
+    {% endif %}
+{% endblock %}
