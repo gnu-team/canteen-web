@@ -30,9 +30,10 @@ And finally, install the required packages:
 `canteen-web` requires [PostgreSQL][3] and [PostGIS][4] since we use
 PostGIS-specific functionality. On Debian Jessie, I did roughly the following:
 
- 1. Installed `postgresql`, `postgis`, and `postgresql-9.4-postgis-2.1`
+ 1. Installed `postgresql` and `postgis`
  2. `sudo -u postgres createuser austin`
  3. `sudo -u postgres createdb -O austin canteen`
+ 4. `sudo -u postgres psql canteen <<<'CREATE EXTENSION postgis'` (because only superusers can create extensions)
 
 I then wrote the following as my `[db]` section in `config.ini` (see below):
 
