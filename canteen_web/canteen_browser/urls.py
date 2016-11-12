@@ -5,5 +5,5 @@ from canteen_browser import views
 app_name = 'canteen_browser'
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.map, name='map'),
 ]
