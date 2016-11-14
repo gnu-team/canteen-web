@@ -1,4 +1,5 @@
 {% extends "canteen_browser/base.html" %}
+{% load static %}
 {% block title %}Map{% endblock %}
 {% block content %}
     {% if settings.GMAPS_API_KEY %}
@@ -34,6 +35,7 @@
 {% block scripts %}
     {% if settings.GMAPS_API_KEY %}
         <script>
+            var REPORT_ICON = "{% static "/canteen_browser/img/drop32.png" %}";
             var GEORGIA_TECH_LAT = 33.779;
             var GEORGIA_TECH_LONG = -84.398;
             var GEORGIA_TECH_ZOOM = 15;
@@ -52,6 +54,7 @@
                     var report = reports[i];
                     new google.maps.Marker({
                         position: { lat: report.latitude, lng: report.longitude },
+                        icon: REPORT_ICON,
                         map: map
                     });
                 }
