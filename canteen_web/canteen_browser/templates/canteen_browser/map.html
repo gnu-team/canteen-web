@@ -35,31 +35,14 @@
 {% block scripts %}
     {% if settings.GMAPS_API_KEY %}
         <script>
-            var REPORT_ICON = "{% static "/canteen_browser/img/drop32.png" %}";
-            var GEORGIA_TECH_LAT = 33.779;
-            var GEORGIA_TECH_LONG = -84.398;
-            var GEORGIA_TECH_ZOOM = 15;
+            // Constants passed from the server on page load
 
+            var REPORT_ICON = "{% static "/canteen_browser/img/drop32.png" %}";
             // Parse generated JSON with JSON.parse instead of directly
             // injecting it because JSON is not a subset of JavaScript
             var reports = JSON.parse("{{ reports_json|escapejs }}");
-
-            function initMap() {
-                var map = new google.maps.Map($('#map')[0], {
-                    zoom: GEORGIA_TECH_ZOOM,
-                    center: { lat: GEORGIA_TECH_LAT, lng: GEORGIA_TECH_LONG }
-                });
-
-                for (var i = 0; i < reports.length; i++) {
-                    var report = reports[i];
-                    new google.maps.Marker({
-                        position: { lat: report.latitude, lng: report.longitude },
-                        icon: REPORT_ICON,
-                        map: map
-                    });
-                }
-            }
         </script>
+        <script src="{% static "/canteen_browser/js/main.js" %}"></script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ settings.GMAPS_API_KEY }}&callback=initMap"></script>
     {% endif %}
 {% endblock %}
