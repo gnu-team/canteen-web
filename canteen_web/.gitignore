@@ -3,4 +3,4 @@
 # ...except for the example
 !config.example.ini
 # static files dir
-static
+/static
