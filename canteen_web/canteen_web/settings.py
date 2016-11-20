@@ -135,6 +135,8 @@ SETTINGS_EXPORT = [
     'GMAPS_API_KEY',
 ]
 
+LOGOUT_REDIRECT_URL = '/'
+
 WSGI_APPLICATION = 'canteen_web.wsgi.application'
 
 
