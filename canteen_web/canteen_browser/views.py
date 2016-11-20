@@ -4,7 +4,8 @@ from rest_framework.renderers import JSONRenderer
 from canteen import models
 from canteen_api import serializers
 
-def map(request):
+# Return the JavaScript REST API client with the given screen active
+def map(request, active_screen=None):
     reports = models.Report.objects.all()
     serializer = serializers.ReportSerializer(reports, many=True,
                                               context={'request': request})
@@ -12,6 +13,7 @@ def map(request):
 
     ctx = {
         'reports_json': reports_json,
+        'active': active_screen or 'map',
     }
 
     return render(request, 'canteen_browser/map.html', ctx)

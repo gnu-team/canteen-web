@@ -19,3 +19,24 @@ function initMap() {
         });
     }
 }
+
+function addCol(row, val) {
+    var entry = $('<td>');
+    entry.text(val);
+    row.append(entry);
+}
+
+$(function () {
+    var tbody = $('#reports tbody');
+    tbody.empty();
+
+    for (var i = 0; i < reports.length; i++) {
+        var report = reports[i];
+
+        var row = $('<tr>');
+        addCol(row, report.id);
+        addCol(row, report.description);
+
+        tbody.append(row);
+    }
+});
