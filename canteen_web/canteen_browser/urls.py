@@ -8,4 +8,5 @@ app_name = 'canteen_browser'
 urlpatterns = [
     url(r'^(?:(?P<active_screen>reports)/)?$', views.map, name='map'),
     url(r'^login/$', auth_views.login),
+    url(r'^logout/$', auth_views.logout),
 ]
