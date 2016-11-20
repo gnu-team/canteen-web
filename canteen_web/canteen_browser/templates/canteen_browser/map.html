@@ -37,7 +37,7 @@
         <script>
             // Constants passed from the server on page load
 
-            var REPORT_ICON = "{% static "/canteen_browser/img/drop32.png" %}";
+            var REPORT_ICON = "{% static "/canteen_browser/img/drop.svg" %}";
             // Parse generated JSON with JSON.parse instead of directly
             // injecting it because JSON is not a subset of JavaScript
             var reports = JSON.parse("{{ reports_json|escapejs }}");
