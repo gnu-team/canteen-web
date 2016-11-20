@@ -18,12 +18,14 @@
     {% endif %}
     <div id="reports"{% if active != "reports" %} class="inactive"{% endif %}>
         <div class="container">
-            <table class="table">
-                <thead>
-                    <tr><th>&num;</th><th>Description</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr><th>&num;</th><th>Description</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 {% endblock %}
