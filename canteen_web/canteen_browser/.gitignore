@@ -1,3 +1,4 @@
 static/canteen_browser/*
 !static/canteen_browser/img
 !static/canteen_browser/js
+!static/canteen_browser/css

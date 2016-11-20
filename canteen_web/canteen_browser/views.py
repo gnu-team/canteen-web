@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from rest_framework.renderers import JSONRenderer
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 
 from canteen import models
 from canteen_api import serializers
+from canteen_browser.forms import UserForm
 
 # Return the JavaScript REST API client with the given screen active
 @login_required(login_url='/login/')
@@ -19,3 +21,17 @@ def map(request, active_screen=None):
     }
 
     return render(request, 'canteen_browser/map.html', ctx)
+
+def register(request):
+    form = UserForm(request.POST if request.method == 'POST' else None)
+
+    if request.method == 'POST' and form.is_valid():
+        user = form.save()
+        login(request, user)
+        return redirect('canteen_browser:map')
+    else:
+        ctx = {
+            'form': form,
+        }
+
+        return render(request, 'registration/register.html', ctx)
