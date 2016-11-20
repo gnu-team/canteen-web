@@ -20,13 +20,29 @@ function initMap() {
     }
 }
 
-function addCol(row, val) {
+function navigateTo(screen) {
+    console.log('go to ' + screen);
+
+    var oldNav = $('#nav-' + active);
+    oldNav.removeClass('active');
+    var newNav = $('#nav-' + screen);
+    newNav.addClass('active');
+
+    var oldContent = $('#' + active);
+    oldContent.addClass('inactive');
+    var newContent = $('#' + screen);
+    newContent.removeClass('inactive');
+
+    active = screen;
+}
+
+function addTableCol(row, val) {
     var entry = $('<td>');
     entry.text(val);
     row.append(entry);
 }
 
-$(function () {
+function repopulateReportsTable() {
     var tbody = $('#reports tbody');
     tbody.empty();
 
@@ -34,9 +50,20 @@ $(function () {
         var report = reports[i];
 
         var row = $('<tr>');
-        addCol(row, report.id);
-        addCol(row, report.description);
+        addTableCol(row, report.id);
+        addTableCol(row, report.description);
 
         tbody.append(row);
     }
+}
+
+$(function () {
+    ['map', 'reports'].forEach(function (val, i, arr) {
+        $('#nav-' + val + ' a').on('click', function () {
+            navigateTo(val);
+            return false;
+        });
+    });
+
+    repopulateReportsTable();
 });

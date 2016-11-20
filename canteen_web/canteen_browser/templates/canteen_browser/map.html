@@ -3,8 +3,8 @@
 {% block title %}Map{% endblock %}
 {% block homepage %}{% url 'canteen_browser:map' %}{% endblock %}
 {% block nav %}
-    <li{% if active == 'map' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' %}">Map</a></li>
-    <li{% if active == 'reports' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' active_screen='reports' %}">Reports</a></li>
+    <li id="nav-map"{% if active == 'map' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' %}">Map</a></li>
+    <li id="nav-reports"{% if active == 'reports' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' active_screen='reports' %}">Reports</a></li>
     <li><a href="#">New Report</a></li>
     <li><a href="#">About</a></li>
 {% endblock %}
@@ -49,6 +49,11 @@
         #map {
             width: 100%;
             height: 100%;
+        }
+        #nav a {
+            /* Remove annoying checkered box around nav elements after
+               clicking */
+            outline: 0;
         }
         .inactive {
             display: none;
