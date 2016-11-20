@@ -33,6 +33,12 @@ function navigateTo(screen) {
     var newContent = $('#' + screen);
     newContent.removeClass('inactive');
 
+    var newPath = ROOT_PATH;
+    if (screen != ROOT_SCREEN) {
+        newPath += screen + '/';
+    }
+    history.pushState({ screen: screen }, 'Screen ' + screen, newPath);
+
     active = screen;
 }
 
@@ -63,6 +69,10 @@ $(function () {
             navigateTo(val);
             return false;
         });
+    });
+
+    $(window).on('popstate', function (e) {
+        navigateTo(e.originalEvent.state.screen);
     });
 
     repopulateReportsTable();
