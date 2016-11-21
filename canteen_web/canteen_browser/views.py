@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from canteen import models
 from canteen_api import serializers
-from canteen_browser.forms import UserForm
+from canteen_browser.forms import RegisterForm
 
 # Return the JavaScript REST API client with the given screen active
 @login_required(login_url='/login/')
@@ -23,7 +23,7 @@ def map(request, active_screen=None):
     return render(request, 'canteen_browser/map.html', ctx)
 
 def register(request):
-    form = UserForm(request.POST if request.method == 'POST' else None)
+    form = RegisterForm(request.POST if request.method == 'POST' else None)
 
     if request.method == 'POST' and form.is_valid():
         user = form.save()
