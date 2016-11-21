@@ -15,8 +15,17 @@ def map(request, active_screen=None):
                                               context={'request': request})
     reports_json = JSONRenderer().render(serializer.data)
 
+    if request.user.has_perm('canteen.view_purityreport'):
+        purity_reports = models.PurityReport.objects.all()
+        serializer = serializers.PurityReportSerializer(purity_reports, many=True,
+                                                        context={'request': request})
+        purity_reports_json = JSONRenderer().render(serializer.data)
+    else:
+        purity_reports_json = None
+
     ctx = {
         'reports_json': reports_json,
+        'purity_reports_json': purity_reports_json,
         'active': active_screen or 'map',
     }
 

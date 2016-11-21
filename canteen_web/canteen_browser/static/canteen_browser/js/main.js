@@ -108,6 +108,33 @@ function repopulateReportsTable() {
     }
 }
 
+function repopulatePurityReportsTable() {
+    var tbody = $('#purity_reports tbody');
+
+    // If the purity reports screen wasn't written by the template
+    // (i.e., if the user doesn't have sufficient permissions to view
+    //  purity reports), give up now.
+    if (tbody.length == 0)
+        return;
+
+    tbody.empty();
+
+    for (var i = 0; i < purity_reports.length; i++) {
+        var report = purity_reports[i];
+
+        var row = $('<tr>');
+        addTableCol(row, report.id);
+        addTableCol(row, prettyDate(report.date));
+        addTableCol(row, report.condition);
+        addTableCol(row, report.virusPPM);
+        addTableCol(row, report.contaminantPPM);
+        addTableCol(row, report.creator_name);
+        addTableCol(row, report.description);
+
+        tbody.append(row);
+    }
+}
+
 $(function () {
     ['map', 'reports'].forEach(function (val, i, arr) {
         $('#nav-' + val + ' a').on('click', function () {
@@ -121,4 +148,5 @@ $(function () {
     });
 
     repopulateReportsTable();
+    repopulatePurityReportsTable();
 });
