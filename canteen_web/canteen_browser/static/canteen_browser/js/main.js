@@ -141,7 +141,7 @@ function repopulatePurityReportsTable() {
 }
 
 $(function () {
-    ['map', 'reports'].forEach(function (val, i, arr) {
+    ['map', 'reports', 'purity_reports'].forEach(function (val, i, arr) {
         $('#nav-' + val + ' a').on('click', function () {
             navigateTo(val);
             return false;
