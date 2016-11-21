@@ -36,8 +36,6 @@ function forceMapRedraw() {
 }
 
 function navigateTo(screen) {
-    console.log('go to ' + screen);
-
     var oldNav = $('#nav-' + active);
     oldNav.removeClass('active');
     var newNav = $('#nav-' + screen);
