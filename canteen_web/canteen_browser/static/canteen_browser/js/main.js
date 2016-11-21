@@ -1,6 +1,23 @@
 // Main
+// Constants
 var GEORGIA_TECH_LOC = { lat: 33.779, lng: -84.398 };
 var GEORGIA_TECH_ZOOM = 15;
+var REPORT_TYPES = [
+    'Bottled',
+    'Well',
+    'Stream',
+    'Lake',
+    'Spring',
+    'Other'
+];
+var REPORT_CONDITIONS = [
+    'Waste',
+    'Treatable-Clear',
+    'Treatable-Muddy',
+    'Potable'
+];
+
+// Global variables
 var drawnMap = active == 'map';
 var map = null;
 
@@ -62,6 +79,10 @@ function navigateTo(screen) {
     active = screen;
 }
 
+function prettyDate(val) {
+    return new Date(val).toString();
+}
+
 function addTableCol(row, val) {
     var entry = $('<td>');
     entry.text(val);
@@ -77,6 +98,10 @@ function repopulateReportsTable() {
 
         var row = $('<tr>');
         addTableCol(row, report.id);
+        addTableCol(row, prettyDate(report.date));
+        addTableCol(row, REPORT_TYPES[report.type]);
+        addTableCol(row, REPORT_CONDITIONS[report.condition]);
+        addTableCol(row, report.creator_name);
         addTableCol(row, report.description);
 
         tbody.append(row);
