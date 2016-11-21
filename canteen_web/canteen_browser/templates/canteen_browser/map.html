@@ -6,8 +6,6 @@
     <ul class="nav navbar-nav">
         <li id="nav-map"{% if active == 'map' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' %}">Map</a></li>
         <li id="nav-reports"{% if active == 'reports' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' active_screen='reports' %}">Reports</a></li>
-        <li><a href="#">New Report</a></li>
-        <li><a href="#">About</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
         <li><p class="navbar-text">Hello, {{ request.user.username }}!</p></li>
