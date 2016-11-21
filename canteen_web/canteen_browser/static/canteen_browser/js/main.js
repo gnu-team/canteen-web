@@ -26,6 +26,17 @@ var PURITY_REPORT_CONDITIONS = [
 var drawnMap = active == 'map';
 var map = null;
 
+function drawReports(map, reports, icon) {
+    for (var i = 0; i < reports.length; i++) {
+        var report = reports[i];
+        new google.maps.Marker({
+            position: { lat: report.latitude, lng: report.longitude },
+            icon: icon,
+            map: map
+        });
+    }
+}
+
 // Callback invoked by the Google Maps api js once it's loaded
 function initMap() {
     map = new google.maps.Map($('#map')[0], {
@@ -33,14 +44,10 @@ function initMap() {
         center: GEORGIA_TECH_LOC
     });
 
-    for (var i = 0; i < reports.length; i++) {
-        var report = reports[i];
-        new google.maps.Marker({
-            position: { lat: report.latitude, lng: report.longitude },
-            icon: REPORT_ICON,
-            map: map
-        });
-    }
+    drawReports(map, reports, REPORT_ICON);
+
+    if (typeof purity_reports !== 'undefined')
+        drawReports(map, purity_reports, PURITY_REPORT_ICON);
 }
 
 // If we initially load a screen other than map (e.g., reports), the

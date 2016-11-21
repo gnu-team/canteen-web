@@ -105,6 +105,7 @@
         var ROOT_PATH = "{% url 'canteen_browser:map' %}";
         var ROOT_SCREEN = "map";
         var REPORT_ICON = "{% static "/canteen_browser/img/drop.svg" %}";
+        var PURITY_REPORT_ICON = "{% static "/canteen_browser/img/yellow-drop.svg" %}";
         // Parse generated JSON with JSON.parse instead of directly
         // injecting it because JSON is not a subset of JavaScript
         var reports = JSON.parse("{{ reports_json|escapejs }}");
