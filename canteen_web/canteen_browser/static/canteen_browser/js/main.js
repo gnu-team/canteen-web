@@ -16,6 +16,11 @@ var REPORT_CONDITIONS = [
     'Treatable-Muddy',
     'Potable'
 ];
+var PURITY_REPORT_CONDITIONS = [
+    'Safe',
+    'Treatable',
+    'Unsafe'
+];
 
 // Global variables
 var drawnMap = active == 'map';
@@ -125,7 +130,7 @@ function repopulatePurityReportsTable() {
         var row = $('<tr>');
         addTableCol(row, report.id);
         addTableCol(row, prettyDate(report.date));
-        addTableCol(row, report.condition);
+        addTableCol(row, PURITY_REPORT_CONDITIONS[report.condition]);
         addTableCol(row, report.virusPPM);
         addTableCol(row, report.contaminantPPM);
         addTableCol(row, report.creator_name);
