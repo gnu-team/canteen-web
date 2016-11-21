@@ -1,11 +1,17 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.password_validation import validate_password
 from canteen.models import Profile
 
+def unused_username(username):
+    if User.objects.filter(username=username).count() > 0:
+        raise ValidationError('Username {} is already in use.'.format(username))
+
 class RegisterForm(forms.Form):
-    username = forms.CharField(validators=(UnicodeUsernameValidator,))
+    username = forms.CharField(max_length=User._meta.get_field('username').max_length,
+                               validators=(UnicodeUsernameValidator, unused_username))
     password = forms.CharField(widget=forms.PasswordInput, validators=(validate_password,))
 
     def save(self):
