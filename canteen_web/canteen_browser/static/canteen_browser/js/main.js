@@ -91,6 +91,68 @@ function navigateTo(screen) {
     active = screen;
 }
 
+function closeAddReport() {
+    $('#addReportModal').modal('hide');
+
+    // Blank out fields
+    Object.keys(ADD_REPORT_FIELDS).forEach(function (field, filter) {
+        var input = $('#addReport-' + field);
+        input.val('');
+        // Undo error state of the wrapping form-group if present
+        input.parent().removeClass('has-error');
+    });
+}
+
+function handleAddReportError(xhr, status, httpError) {
+    var data = xhr.responseJSON;
+
+    var detailHelp = $('#addReport-help');
+    if (data.hasOwnProperty('detail')) {
+        var error = data[field];
+        detailHelp.text(error);
+        detailHelp.removeClass('inactive');
+    } else {
+        detailHelp.addClass('inactive');
+    }
+
+    Object.keys(ADD_REPORT_FIELDS).forEach(function (field) {
+        var formGroup = $('#addReport-' + field).parent();
+        var help = $('#addReport-help-' + field);
+        if (data.hasOwnProperty(field)) {
+            var errors = data[field];
+            // Set error state of wrapping form-group
+            formGroup.addClass('has-error');
+            // Show error message
+            help.text(errors.join('; '));
+            help.removeClass('inactive');
+        } else {
+            formGroup.removeClass('has-error');
+            help.text('');
+            help.addClass('inactive');
+        }
+    });
+}
+
+function addReport() {
+    var blob = {};
+
+    Object.keys(ADD_REPORT_FIELDS).forEach(function (field) {
+        var filter = ADD_REPORT_FIELDS[field];
+        var val = $('#addReport-' + field).val();
+        if (filter != null) {
+            val = filter(val);
+        }
+        blob[field] = val;
+    });
+
+    $.ajax('/api/reports/', {
+        method: 'POST',
+        data: JSON.stringify(blob),
+        success: closeAddReport,
+        error: handleAddReportError
+    });
+}
+
 function prettyDate(val) {
     return new Date(val).toString();
 }
@@ -147,6 +209,20 @@ function repopulatePurityReportsTable() {
     }
 }
 
+$.ajaxSetup({
+    // Send, expect JSON
+    dataType: 'json',
+    contentType: 'application/json; charset=UTF-8',
+
+    // Send the CSRF token with every request
+    // From: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", CSRF_TOKEN);
+        }
+    }
+});
+
 $(function () {
     ['map', 'reports', 'purity_reports'].forEach(function (val, i, arr) {
         $('#nav-' + val + ' a').on('click', function () {
@@ -158,6 +234,8 @@ $(function () {
     $(window).on('popstate', function (e) {
         navigateTo(e.originalEvent.state.screen);
     });
+
+    $('#addReport-save').on('click', addReport);
 
     repopulateReportsTable();
     repopulatePurityReportsTable();
