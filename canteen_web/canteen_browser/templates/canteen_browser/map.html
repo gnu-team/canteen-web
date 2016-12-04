@@ -7,7 +7,7 @@
         <li id="nav-map"{% if active == 'map' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' %}">Map</a></li>
         <li id="nav-reports"{% if active == 'reports' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' active_screen='reports' %}">Reports</a></li>
         {% if perms.canteen.view_purityreport %}
-            <li id="nav-purity_reports"{% if active == 'reports' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' active_screen='purity_reports' %}">Purity Reports</a></li>
+            <li id="nav-purity_reports"{% if active == 'purity_reports' %} class="active"{% endif %}><a href="{% url 'canteen_browser:map' active_screen='purity_reports' %}">Purity Reports</a></li>
         {% endif %}
     </ul>
     <ul class="nav navbar-nav navbar-right">
