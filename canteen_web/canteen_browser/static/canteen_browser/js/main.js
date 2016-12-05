@@ -31,13 +31,31 @@ function titleFor(screen) {
     return screen.charAt(0).toUpperCase() + screen.replace('_', ' ').slice(1);
 }
 
-function drawReports(map, reports, icon) {
+function reportSummary(type, report) {
+    var result = prettyID(type, report.id);
+
+    // (Source) report
+    if (type == 'S') {
+        result += ': ' + REPORT_CONDITIONS[report.condition] + ' ' + REPORT_TYPES[report.type];
+    // Purity report
+    } else if (type == 'P') {
+        result += ': ' + PURITY_REPORT_CONDITIONS[report.condition];
+    }
+
+    if (report.description)
+        result += ': ' + report.description;
+
+    return result;
+}
+
+function drawReports(map, reports, icon, type) {
     for (var i = 0; i < reports.length; i++) {
         var report = reports[i];
         markers.push(new google.maps.Marker({
             position: { lat: report.latitude, lng: report.longitude },
             icon: icon,
-            map: map
+            map: map,
+            title: reportSummary(type, report)
         }));
     }
 }
@@ -48,10 +66,10 @@ function repopulateMapMarkers() {
         markers.pop().setMap(null);
     }
 
-    drawReports(map, reports, REPORT_ICON);
+    drawReports(map, reports, REPORT_ICON, 'S');
 
     if (typeof purity_reports !== 'undefined')
-        drawReports(map, purity_reports, PURITY_REPORT_ICON);
+        drawReports(map, purity_reports, PURITY_REPORT_ICON, 'P');
 }
 
 // Callback invoked by the Google Maps api js once it's loaded
