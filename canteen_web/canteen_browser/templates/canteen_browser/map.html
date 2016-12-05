@@ -223,6 +223,7 @@
 
 {% block scripts %}
     {% csrf_token %}
+    <script src="{% static "/canteen_browser/chart.js/dist/Chart.min.js" %}"></script>
     <script>
         // Constants passed from the server on page load
         var ROOT_PATH = "{% url 'canteen_browser:map' %}";
