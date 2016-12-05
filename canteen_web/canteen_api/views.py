@@ -9,7 +9,7 @@ from canteen_api.permissions import DjangoModelPermissionsWithView, IsAdminOrPos
 from canteen_api.serializers import ReportSerializer, PurityReportSerializer, UserSerializer
 
 class ReportViewSet(viewsets.ModelViewSet):
-    queryset = Report.objects.all().order_by('type');
+    queryset = Report.objects.all()
     serializer_class = ReportSerializer
     permission_classes = (DjangoModelPermissionsWithView,)
 
@@ -17,7 +17,7 @@ class ReportViewSet(viewsets.ModelViewSet):
         serializer.save(date=datetime.now(timezone.utc), creator=self.request.user)
 
 class PurityReportViewSet(viewsets.ModelViewSet):
-    queryset = PurityReport.objects.all();
+    queryset = PurityReport.objects.all()
     serializer_class = PurityReportSerializer
     permission_classes = (DjangoModelPermissionsWithView,)
 
