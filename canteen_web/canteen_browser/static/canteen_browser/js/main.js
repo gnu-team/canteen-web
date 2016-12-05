@@ -142,6 +142,10 @@ function navigateTo(screen) {
     active = screen;
 }
 
+function showHistoryModalFor(latitude, longitude) {
+    console.log('History of: ' + latitude + ', ' + longitude);
+}
+
 function AddModalManager(id, fields, endpoint, callback) {
     this.id = id;
     this.fields = fields;
@@ -289,6 +293,13 @@ function repopulatePurityReportsTable() {
         addTableCol(row, report.contaminantPPM);
         addTableCol(row, report.creator_name);
         addTableCol(row, report.description);
+
+        var historyBtn = $('<button type="button" class="btn btn-default" aria-label="Purity History" title="Purity History"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span></button>');
+        historyBtn.on('click', function (report) {
+            showHistoryModalFor(report.latitude, report.longitude)
+        }.bind(this, report));
+
+        row.append($('<td>').append(historyBtn));
 
         tbody.append(row);
     }
