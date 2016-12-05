@@ -199,6 +199,11 @@ AddModalManager.prototype.addReport = function () {
     });
 }
 
+function prettyID(type, num) {
+    // http://stackoverflow.com/a/20460414/321301
+    return type + '-' + ('0000' + num).slice(-4);
+}
+
 function prettyDate(val) {
     return new Date(val).toString();
 }
@@ -217,7 +222,7 @@ function repopulateReportsTable() {
         var report = reports[i];
 
         var row = $('<tr>');
-        addTableCol(row, report.id);
+        addTableCol(row, prettyID('S', report.id));
         addTableCol(row, prettyDate(report.date));
         addTableCol(row, REPORT_TYPES[report.type]);
         addTableCol(row, REPORT_CONDITIONS[report.condition]);
@@ -243,7 +248,7 @@ function repopulatePurityReportsTable() {
         var report = purity_reports[i];
 
         var row = $('<tr>');
-        addTableCol(row, report.id);
+        addTableCol(row, prettyID('P', report.id));
         addTableCol(row, prettyDate(report.date));
         addTableCol(row, PURITY_REPORT_CONDITIONS[report.condition]);
         addTableCol(row, report.virusPPM);
