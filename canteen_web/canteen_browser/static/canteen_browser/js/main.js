@@ -31,7 +31,7 @@ function titleFor(screen) {
     return screen.charAt(0).toUpperCase() + screen.replace('_', ' ').slice(1);
 }
 
-function reportSummary(type, report) {
+function reportSummary(type, report, showDesc) {
     var result = prettyID(type, report.id);
 
     // (Source) report
@@ -42,7 +42,7 @@ function reportSummary(type, report) {
         result += ': ' + PURITY_REPORT_CONDITIONS[report.condition];
     }
 
-    if (report.description)
+    if (showDesc && report.description)
         result += ': ' + report.description;
 
     return result;
@@ -51,12 +51,28 @@ function reportSummary(type, report) {
 function drawReports(map, reports, icon, type) {
     for (var i = 0; i < reports.length; i++) {
         var report = reports[i];
-        markers.push(new google.maps.Marker({
+        var marker = new google.maps.Marker({
             position: { lat: report.latitude, lng: report.longitude },
             icon: icon,
             map: map,
-            title: reportSummary(type, report)
-        }));
+            title: reportSummary(type, report, true)
+        });
+
+        // Hack to escape HTML in description
+        var safeDesc = $('<span />').text(report.description).html();
+        var infoWindow = new google.maps.InfoWindow({
+            content: '<strong>' + reportSummary(type, report, false) +
+                     '</strong><br>' + report.latitude + ', ' +
+                     report.longitude + '<p>' + safeDesc + '</p>'
+        });
+
+        // bind() is necessary to prevent the handler from referencing a
+        // infoWindow or marker in a later loop iteration
+        marker.addListener('click', function (infoWindow, marker) {
+            infoWindow.open(map, marker);
+        }.bind(this, infoWindow, marker));
+
+        markers.push(marker);
     }
 }
 
