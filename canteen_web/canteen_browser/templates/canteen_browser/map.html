@@ -1,6 +1,6 @@
 {% extends "canteen_browser/base.html" %}
 {% load static %}
-{% block title %}Map{% endblock %}
+{% block title %}{{ active_title }}{% endblock %}
 {% block homepage %}{% url 'canteen_browser:map' %}{% endblock %}
 {% block nav %}
     <ul class="nav navbar-nav">

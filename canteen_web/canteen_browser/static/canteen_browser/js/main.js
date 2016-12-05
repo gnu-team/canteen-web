@@ -26,6 +26,10 @@ var PURITY_REPORT_CONDITIONS = [
 var drawnMap = active == 'map';
 var map = null;
 
+function titleFor(screen) {
+    return screen.charAt(0).toUpperCase() + screen.replace('_', ' ').slice(1);
+}
+
 function drawReports(map, reports, icon) {
     for (var i = 0; i < reports.length; i++) {
         var report = reports[i];
@@ -80,6 +84,9 @@ function navigateTo(screen) {
         newPath += screen + '/';
     }
     history.pushState({ screen: screen }, 'Screen ' + screen, newPath);
+
+    // Fix the title
+    document.title = document.title.replace(titleFor(active), titleFor(screen));
 
     // Hack to make the Google Map show up properly when it wasn't the
     // first screen loaded (see comment above forceMapRedraw() for more

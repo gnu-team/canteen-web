@@ -23,10 +23,12 @@ def map(request, active_screen=None):
     else:
         purity_reports_json = None
 
+    active = active_screen or 'map'
     ctx = {
         'reports_json': reports_json,
         'purity_reports_json': purity_reports_json,
-        'active': active_screen or 'map',
+        'active': active,
+        'active_title': active.replace('_', ' ').capitalize(),
     }
 
     return render(request, 'canteen_browser/map.html', ctx)
