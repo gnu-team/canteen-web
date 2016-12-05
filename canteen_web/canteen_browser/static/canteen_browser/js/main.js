@@ -91,22 +91,43 @@ function navigateTo(screen) {
     active = screen;
 }
 
-function closeAddReport() {
-    $('#addReportModal').modal('hide');
+function AddModalManager(id, fields) {
+    this.id = id;
+    this.fields = fields;
+
+    // Register handler for save button
+    var that = this;
+    this.get('save').on('click', function() { that.addReport(); });
+}
+
+// Get a child element by ID
+AddModalManager.prototype.get = function (subId) {
+    return $(this.id + '-' + subId);
+}
+
+AddModalManager.prototype.forEachField = function (f) {
+    var that = this;
+    Object.keys(this.fields).forEach(function (element, index, arr) {
+        f.call(that, element, index, arr);
+    });
+}
+
+AddModalManager.prototype.closeAddReport = function () {
+    this.get('modal').modal('hide');
 
     // Blank out fields
-    Object.keys(ADD_REPORT_FIELDS).forEach(function (field, filter) {
-        var input = $('#addReport-' + field);
+    this.forEachField(function (field, filter) {
+        var input = this.get(field);
         input.val('');
         // Undo error state of the wrapping form-group if present
         input.parent().removeClass('has-error');
     });
 }
 
-function handleAddReportError(xhr, status, httpError) {
+AddModalManager.prototype.handleAddReportError = function (xhr, status, httpError) {
     var data = xhr.responseJSON;
 
-    var detailHelp = $('#addReport-help');
+    var detailHelp = this.get('help');
     if (data.hasOwnProperty('detail')) {
         var error = data[field];
         detailHelp.text(error);
@@ -115,9 +136,9 @@ function handleAddReportError(xhr, status, httpError) {
         detailHelp.addClass('inactive');
     }
 
-    Object.keys(ADD_REPORT_FIELDS).forEach(function (field) {
-        var formGroup = $('#addReport-' + field).parent();
-        var help = $('#addReport-help-' + field);
+    this.forEachField(function (field) {
+        var formGroup = this.get(field).parent();
+        var help = this.get('help-' + field);
         if (data.hasOwnProperty(field)) {
             var errors = data[field];
             // Set error state of wrapping form-group
@@ -133,23 +154,26 @@ function handleAddReportError(xhr, status, httpError) {
     });
 }
 
-function addReport() {
+AddModalManager.prototype.addReport = function () {
     var blob = {};
 
-    Object.keys(ADD_REPORT_FIELDS).forEach(function (field) {
-        var filter = ADD_REPORT_FIELDS[field];
-        var val = $('#addReport-' + field).val();
+    this.forEachField(function (field) {
+        var filter = this.fields[field];
+        var val = this.get(field).val();
         if (filter != null) {
             val = filter(val);
         }
         blob[field] = val;
     });
 
+    var that = this;
     $.ajax('/api/reports/', {
         method: 'POST',
         data: JSON.stringify(blob),
-        success: closeAddReport,
-        error: handleAddReportError
+        success: function () { that.closeAddReport(); },
+        error: function (xhr, status, httpError) {
+            that.handleAddReportError(xhr, status, httpError);
+        }
     });
 }
 
@@ -235,7 +259,7 @@ $(function () {
         navigateTo(e.originalEvent.state.screen);
     });
 
-    $('#addReport-save').on('click', addReport);
+    new AddModalManager('#addReport', ADD_REPORT_FIELDS);
 
     repopulateReportsTable();
     repopulatePurityReportsTable();
