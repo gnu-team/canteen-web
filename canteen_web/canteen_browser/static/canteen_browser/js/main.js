@@ -91,10 +91,11 @@ function navigateTo(screen) {
     active = screen;
 }
 
-function AddModalManager(id, fields, endpoint) {
+function AddModalManager(id, fields, endpoint, callback) {
     this.id = id;
     this.fields = fields;
     this.endpoint = endpoint;
+    this.callback = callback;
 
     // Register handler for save button
     var that = this;
@@ -171,7 +172,10 @@ AddModalManager.prototype.addReport = function () {
     $.ajax(this.endpoint, {
         method: 'POST',
         data: JSON.stringify(blob),
-        success: function () { that.closeAddReport(); },
+        success: function () {
+            that.callback();
+            that.closeAddReport();
+        },
         error: function (xhr, status, httpError) {
             that.handleAddReportError(xhr, status, httpError);
         }
@@ -234,6 +238,26 @@ function repopulatePurityReportsTable() {
     }
 }
 
+function refreshReports() {
+    $.ajax(ADD_REPORT_ENDPOINT, {
+        method: 'GET',
+        success: function (data, status, xhr) {
+            reports = data;
+            repopulateReportsTable();
+        }
+    });
+}
+
+function refreshPurityReports() {
+    $.ajax(ADD_PURITY_REPORT_ENDPOINT, {
+        method: 'GET',
+        success: function (data, status, xhr) {
+            purity_reports = data;
+            repopulatePurityReportsTable();
+        }
+    });
+}
+
 $.ajaxSetup({
     // Send, expect JSON
     dataType: 'json',
@@ -260,9 +284,11 @@ $(function () {
         navigateTo(e.originalEvent.state.screen);
     });
 
-    new AddModalManager('#addReport', ADD_REPORT_FIELDS, ADD_REPORT_ENDPOINT);
+    new AddModalManager('#addReport', ADD_REPORT_FIELDS, ADD_REPORT_ENDPOINT,
+                                      refreshReports);
     new AddModalManager('#addPurityReport', ADD_PURITY_REPORT_FIELDS,
-                                            ADD_PURITY_REPORT_ENDPOINT);
+                                            ADD_PURITY_REPORT_ENDPOINT,
+                                            refreshPurityReports);
 
     repopulateReportsTable();
     repopulatePurityReportsTable();
