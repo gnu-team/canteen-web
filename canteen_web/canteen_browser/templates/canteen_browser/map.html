@@ -104,6 +104,11 @@
     {% if perms.canteen.view_purityreport %}
         <div id="purity_reports"{% if active != "purity_reports" %} class="inactive"{% endif %}>
             <div class="container">
+                {% if perms.canteen.add_purityreport %}
+                    <button type="button" class="btn btn-default add-btn" data-toggle="modal" data-target="#addPurityReport-modal">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Purity Report
+                    </button>
+                {% endif %}
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -119,6 +124,57 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        <div id="addPurityReport-modal" class="modal fade" role="dialog" aria-labelledby="addPurityReport-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="addPurityReport-label" class="modal-title">Add Purity Report</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="addPurityReport-help" class="alert alert-danger inactive" role="alert"></div>
+                        <div class="form-group">
+                            <label for="addPurityReport-latitude">Latitude</label>
+                            <input id="addPurityReport-latitude" class="form-control" type="number" step="0.0001" placeholder="33.772347">
+                            <span id="addPurityReport-help-latitude" class="help-block inactive"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="addPurityReport-longitude">Longitude</label>
+                            <input id="addPurityReport-longitude" class="form-control" type="number" step="0.0001" placeholder="-84.394700">
+                            <span id="addPurityReport-help-longitude" class="help-block inactive"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="addPurityReport-condition">Condition</label>
+                            <select id="addPurityReport-condition" class="form-control">
+                                <option value="0" selected>Safe</option>
+                                <option value="1">Treatable</option>
+                                <option value="2">Unsafe</option>
+                            </select>
+                            <span id="addPurityReport-help-condition" class="help-block inactive"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="addPurityReport-virusPPM">Virus PPM</label>
+                            <input id="addPurityReport-virusPPM" class="form-control" type="number" step="0.1" placeholder="80.5">
+                            <span id="addPurityReport-help-virusPPM" class="help-block inactive"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="addPurityReport-contaminantPPM">Contaminant PPM</label>
+                            <input id="addPurityReport-contaminantPPM" class="form-control" type="number" step="0.1" placeholder="10.7">
+                            <span id="addPurityReport-help-contaminantPPM" class="help-block inactive"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="addPurityReport-description">Description (optional)</label>
+                            <textarea id="addPurityReport-description" class="form-control" maxlength="256"></textarea>
+                            <span id="addPurityReport-help-description" class="help-block inactive"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="addPurityReport-save" type="button" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,11 +230,22 @@
         var CSRF_TOKEN = $('[name=csrfmiddlewaretoken]').val();
 
         // Fields in the add report modal
+        var ADD_REPORT_ENDPOINT = '/api/reports/';
         var ADD_REPORT_FIELDS = {
             latitude: parseFloat,
             longitude: parseFloat,
             type: parseInt,
             condition: parseInt,
+            description: null
+        };
+        // Fields in the add purity report modal
+        var ADD_PURITY_REPORT_ENDPOINT = '/api/purity_reports/';
+        var ADD_PURITY_REPORT_FIELDS = {
+            latitude: parseFloat,
+            longitude: parseFloat,
+            condition: parseInt,
+            virusPPM: parseFloat,
+            contaminantPPM: parseFloat,
             description: null
         };
 

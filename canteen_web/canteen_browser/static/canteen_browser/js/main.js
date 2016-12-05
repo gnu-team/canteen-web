@@ -91,9 +91,10 @@ function navigateTo(screen) {
     active = screen;
 }
 
-function AddModalManager(id, fields) {
+function AddModalManager(id, fields, endpoint) {
     this.id = id;
     this.fields = fields;
+    this.endpoint = endpoint;
 
     // Register handler for save button
     var that = this;
@@ -167,7 +168,7 @@ AddModalManager.prototype.addReport = function () {
     });
 
     var that = this;
-    $.ajax('/api/reports/', {
+    $.ajax(this.endpoint, {
         method: 'POST',
         data: JSON.stringify(blob),
         success: function () { that.closeAddReport(); },
@@ -259,7 +260,9 @@ $(function () {
         navigateTo(e.originalEvent.state.screen);
     });
 
-    new AddModalManager('#addReport', ADD_REPORT_FIELDS);
+    new AddModalManager('#addReport', ADD_REPORT_FIELDS, ADD_REPORT_ENDPOINT);
+    new AddModalManager('#addPurityReport', ADD_PURITY_REPORT_FIELDS,
+                                            ADD_PURITY_REPORT_ENDPOINT);
 
     repopulateReportsTable();
     repopulatePurityReportsTable();
