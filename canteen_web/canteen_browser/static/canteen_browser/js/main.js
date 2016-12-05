@@ -23,6 +23,7 @@ var PURITY_REPORT_CONDITIONS = [
 ];
 
 // Global variables
+var markers = [];
 var drawnMap = active == 'map';
 var map = null;
 
@@ -33,12 +34,24 @@ function titleFor(screen) {
 function drawReports(map, reports, icon) {
     for (var i = 0; i < reports.length; i++) {
         var report = reports[i];
-        new google.maps.Marker({
+        markers.push(new google.maps.Marker({
             position: { lat: report.latitude, lng: report.longitude },
             icon: icon,
             map: map
-        });
+        }));
     }
+}
+
+function repopulateMapMarkers() {
+    // Remove all existing markers
+    while (markers.length > 0) {
+        markers.pop().setMap(null);
+    }
+
+    drawReports(map, reports, REPORT_ICON);
+
+    if (typeof purity_reports !== 'undefined')
+        drawReports(map, purity_reports, PURITY_REPORT_ICON);
 }
 
 // Callback invoked by the Google Maps api js once it's loaded
@@ -48,10 +61,7 @@ function initMap() {
         center: GEORGIA_TECH_LOC
     });
 
-    drawReports(map, reports, REPORT_ICON);
-
-    if (typeof purity_reports !== 'undefined')
-        drawReports(map, purity_reports, PURITY_REPORT_ICON);
+    repopulateMapMarkers();
 }
 
 // If we initially load a screen other than map (e.g., reports), the
@@ -251,6 +261,7 @@ function refreshReports() {
         success: function (data, status, xhr) {
             reports = data;
             repopulateReportsTable();
+            repopulateMapMarkers();
         }
     });
 }
@@ -261,6 +272,7 @@ function refreshPurityReports() {
         success: function (data, status, xhr) {
             purity_reports = data;
             repopulatePurityReportsTable();
+            repopulateMapMarkers();
         }
     });
 }
