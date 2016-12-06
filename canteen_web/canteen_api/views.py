@@ -88,4 +88,4 @@ class NearbyPurityReportsView(generics.ListAPIView):
             # date inclusive)
             filter_['date__lt'] = getdate(self.request.GET['endDate']) + timedelta(days=1)
 
-        return PurityReport.objects.filter(**filter_)
+        return PurityReport.objects.filter(**filter_).order_by('date')
