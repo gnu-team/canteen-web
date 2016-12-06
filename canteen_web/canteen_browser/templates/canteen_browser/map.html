@@ -11,11 +11,58 @@
         {% endif %}
     </ul>
     <ul class="nav navbar-nav navbar-right">
-        <li><p class="navbar-text">Hello, {{ request.user.username }}!</p></li>
+        <li><a href="#" data-toggle="modal" data-target="#editProfile-modal">Hello, {{ request.user.username }}!</a></li>
         <li><a href="{% url 'canteen_browser:logout' %}">Logout</a></li>
     </ul>
 {% endblock %}
 {% block content %}
+    <div id="editProfile-modal" class="modal fade" role="dialog" aria-labelledby="editProfile-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="editProfile-label" class="modal-title">Edit Profile</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="editProfile-help" class="alert alert-danger inactive" role="alert"></div>
+                    <div class="form-group">
+                        <label for="editProfile-first_name">First name</label>
+                        <input id="editProfile-first_name" class="form-control" type="text" placeholder="George">
+                        <span id="editProfile-help-first_name" class="help-block inactive"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProfile-last_name">Last name</label>
+                        <input id="editProfile-last_name" class="form-control" type="text" placeholder="Burdell">
+                        <span id="editProfile-help-last_name" class="help-block inactive"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProfile-email">Email address</label>
+                        <input id="editProfile-email" class="form-control" type="email" placeholder="gburdell@gatech.edu">
+                        <span id="editProfile-help-email" class="help-block inactive"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProfile-phone">Phone number</label>
+                        <input id="editProfile-phone" class="form-control" type="text" placeholder="123-456-7890">
+                        <span id="editProfile-help-phone" class="help-block inactive"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProfile-address">Address</label>
+                        <textarea id="editProfile-address" class="form-control"></textarea>
+                        <span id="editProfile-help-address" class="help-block inactive"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProfile-bio">Bio</label>
+                        <textarea id="editProfile-bio" class="form-control"></textarea>
+                        <span id="editProfile-help-bio" class="help-block inactive"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="editProfile-save" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% if settings.GMAPS_API_KEY %}
         <div id="map"{% if active != "map" %} class="inactive"{% endif %}></div>
     {% else %}
@@ -281,6 +328,15 @@
             description: null
         };
         var NEARBY_PURITY_REPORT_ENDPOINT = '/api/purity_reports/near/';
+        var PROFILE_FIELDS = {
+            first_name: null,
+            last_name: null,
+            email: null,
+            phone: null,
+            address: null,
+            bio: null
+        };
+        var PROFILE_ENDPOINT = '/api/users/me/';
 
         // Parse generated JSON with JSON.parse instead of directly
         // injecting it because JSON is not a subset of JavaScript

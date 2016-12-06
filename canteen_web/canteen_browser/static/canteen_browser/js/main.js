@@ -261,10 +261,11 @@ function setupHistoryReportModal() {
     });
 }
 
-function AddModalManager(id, fields, endpoint, callback) {
+function AddModalManager(id, fields, endpoint, method, callback) {
     this.id = id;
     this.fields = fields;
     this.endpoint = endpoint;
+    this.method = method;
     this.callback = callback;
 
     // Register handler for save button
@@ -340,15 +341,33 @@ AddModalManager.prototype.addReport = function () {
 
     var that = this;
     $.ajax(this.endpoint, {
-        method: 'POST',
+        method: that.method,
         data: JSON.stringify(blob),
         success: function () {
-            that.callback();
+            if (that.callback != null) {
+                that.callback();
+            }
             that.closeAddReport();
         },
         error: function (xhr, status, httpError) {
             that.handleAddReportError(xhr, status, httpError);
         }
+    });
+}
+
+function ProfileModalManager(id, fields, endpoint) {
+    this.addMgr = new AddModalManager(id, fields, endpoint, 'PATCH', null);
+    var that = this;
+
+    this.addMgr.get('modal').on('show.bs.modal', function () {
+        $.ajax(that.addMgr.endpoint, {
+            method: 'GET',
+            success: function (data) {
+                that.addMgr.forEachField(function (field) {
+                    that.addMgr.get(field).val(data[field]);
+                });
+            }
+        });
     });
 }
 
@@ -474,10 +493,11 @@ $(function () {
     });
 
     new AddModalManager('#addReport', ADD_REPORT_FIELDS, ADD_REPORT_ENDPOINT,
-                                      refreshReports);
+                                      'POST', refreshReports);
     new AddModalManager('#addPurityReport', ADD_PURITY_REPORT_FIELDS,
                                             ADD_PURITY_REPORT_ENDPOINT,
-                                            refreshPurityReports);
+                                            'POST', refreshPurityReports);
+    new ProfileModalManager('#editProfile', PROFILE_FIELDS, PROFILE_ENDPOINT);
 
     setupHistoryReportModal();
 
