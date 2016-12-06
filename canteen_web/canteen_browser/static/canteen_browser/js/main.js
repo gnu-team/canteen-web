@@ -26,6 +26,12 @@ var PURITY_REPORT_CONDITIONS = [
 var markers = [];
 var drawnMap = active == 'map';
 var map = null;
+var historyReportState = {
+    latitude: null,
+    longitude: null,
+    year: null,
+    isVirus: true,
+};
 
 function titleFor(screen) {
     return screen.charAt(0).toUpperCase() + screen.replace('_', ' ').slice(1);
@@ -142,8 +148,117 @@ function navigateTo(screen) {
     active = screen;
 }
 
-function showHistoryModalFor(latitude, longitude) {
-    console.log('History of: ' + latitude + ', ' + longitude);
+function avg(values) {
+    var sum = 0;
+    var i = 0;
+
+    while (values.length > 0) {
+        sum += values.pop();
+        i++;
+    }
+
+    return sum / i;
+}
+
+function averagePurityDuplicates(reports) {
+    var lastMonth = -1;
+    var virusVals = [];
+    var contamVals = [];
+    var virusData = new Array(12).fill(null);
+    var contamData = new Array(12).fill(null);
+
+    for (var i = 0; i <= reports.length; i++) {
+        var report = null;
+        var month = -1;
+
+        if (i < reports.length) {
+            report = reports[i];
+            month = new Date(report.date).getMonth();
+        }
+
+        if (month != lastMonth && lastMonth != -1) {
+            virusData[lastMonth] = avg(virusVals);
+            contamData[lastMonth] = avg(contamVals);
+        }
+
+        if (i < reports.length) {
+            lastMonth = month;
+
+            virusVals.push(report.virusPPM);
+            contamVals.push(report.contaminantPPM);
+        }
+    }
+
+    return [virusData, contamData];
+}
+
+function drawHistoryChart(isVirus, reports, year) {
+    var both = averagePurityDuplicates(reports);
+    var data = isVirus? both[0] : both[1];
+
+    var canvas = $('#historyReport-chart');
+    var chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June',
+                     'July', 'August', 'September', 'October', 'November',
+                     'December'],
+            datasets: [
+                {
+                    data: data,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            legend: {
+                display: false
+            }
+        }
+    });
+}
+
+function fixHistoryReportTabs() {
+    var virusTab = $('#historyReport-tab-virus');
+    var contamTab = $('#historyReport-tab-contam');
+
+    if (historyReportState.isVirus) {
+        virusTab.addClass('active');
+        contamTab.removeClass('active');
+    } else {
+        contamTab.addClass('active');
+        virusTab.removeClass('active');
+    }
+}
+
+function redrawHistoryReport() {
+    var s = historyReportState;
+    var path = NEARBY_PURITY_REPORT_ENDPOINT + s.latitude + ',' + s.longitude +
+               '/?startDate=' + s.year + '-01-01' + '&endDate=' + s.year + '-12-31';
+
+    $.ajax(path, {
+        method: 'GET',
+        success: function (data) {
+            $('#historyReport-year').val(s.year);
+            fixHistoryReportTabs();
+            drawHistoryChart(s.isVirus, data, s.year);
+        }
+    });
+}
+
+function setupHistoryReportModal() {
+    $('#historyReport-tab-virus').on('click', function () {
+        historyReportState.isVirus = true;
+        redrawHistoryReport();
+    });
+    $('#historyReport-tab-contam').on('click', function () {
+        historyReportState.isVirus = false;
+        redrawHistoryReport();
+    });
+    $('#historyReport-year').on('input', function () {
+        historyReportState.year = parseInt($('#historyReport-year').val()),
+        redrawHistoryReport();
+    });
 }
 
 function AddModalManager(id, fields, endpoint, callback) {
@@ -296,7 +411,12 @@ function repopulatePurityReportsTable() {
 
         var historyBtn = $('<button type="button" class="btn btn-default" aria-label="Purity History" title="Purity History"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span></button>');
         historyBtn.on('click', function (report) {
-            showHistoryModalFor(report.latitude, report.longitude)
+            historyReportState.latitude = report.latitude;
+            historyReportState.longitude = report.longitude;
+            historyReportState.year = new Date(report.date).getFullYear();
+
+            $('#historyReport-modal').modal('show');
+            redrawHistoryReport();
         }.bind(this, report));
 
         row.append($('<td>').append(historyBtn));
@@ -358,6 +478,8 @@ $(function () {
     new AddModalManager('#addPurityReport', ADD_PURITY_REPORT_FIELDS,
                                             ADD_PURITY_REPORT_ENDPOINT,
                                             refreshPurityReports);
+
+    setupHistoryReportModal();
 
     repopulateReportsTable();
     repopulatePurityReportsTable();

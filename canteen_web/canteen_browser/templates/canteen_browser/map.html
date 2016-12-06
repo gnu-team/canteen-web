@@ -135,6 +135,15 @@
                         <h4 id="historyReport-label" class="modal-title">Purity History</h4>
                     </div>
                     <div class="modal-body">
+                        <ul class="nav nav-tabs nav-justified">
+                            <li id="historyReport-tab-virus" role="presentation" class="active"><a href="#">Virus PPM</a></li>
+                            <li id="historyReport-tab-contam" role="presentation"><a href="#">Contaminant PPM</a></li>
+                        </ul>
+                        <label id="historyReport-year-label">
+                            Year:
+                            <input id="historyReport-year" type="number" step="1">
+                        </label>
+                        <canvas id="historyReport-chart" width="400" height="400"></canvas>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
@@ -227,6 +236,11 @@
                clicking */
             outline: 0;
         }
+        #historyReport-year-label {
+            display: block;
+            margin: 4px auto;
+            text-align: center;
+        }
         .inactive {
             display: none;
         }
@@ -266,6 +280,7 @@
             contaminantPPM: parseFloat,
             description: null
         };
+        var NEARBY_PURITY_REPORT_ENDPOINT = '/api/purity_reports/near/';
 
         // Parse generated JSON with JSON.parse instead of directly
         // injecting it because JSON is not a subset of JavaScript
