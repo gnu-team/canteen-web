@@ -32,6 +32,12 @@ var historyReportState = {
     year: null,
     isVirus: true,
 };
+var latLongState = {
+    latitude: null,
+    longitude: null
+};
+var addReportMgr = null;
+var addPurityMgr = null;
 
 function titleFor(screen) {
     return screen.charAt(0).toUpperCase() + screen.replace('_', ' ').slice(1);
@@ -82,6 +88,32 @@ function drawReports(map, reports, icon, type) {
     }
 }
 
+function setupMapEntry(subId, mgr) {
+    $('#map-menu-' + subId).on('click', function () {
+        hideMapMenu();
+        mgr.show(latLongState.latitude, latLongState.longitude);
+    });
+}
+
+function setupMapMenu() {
+    setupMapEntry('report', addReportMgr);
+    setupMapEntry('purity', addPurityMgr);
+}
+
+function hideMapMenu() {
+    $('#map-menu').addClass('inactive');
+}
+
+function showMapMenu(x, y) {
+    var menu = $('#map-menu');
+
+    menu.removeClass('inactive');
+    menu.css({
+        left: x + 'px',
+        top: y + 'px'
+    });
+}
+
 function repopulateMapMarkers() {
     // Remove all existing markers
     while (markers.length > 0) {
@@ -100,6 +132,14 @@ function initMap() {
         zoom: GEORGIA_TECH_ZOOM,
         center: GEORGIA_TECH_LOC
     });
+
+    google.maps.event.addListener(map, 'rightclick', function (e) {
+        latLongState.latitude = e.latLng.lat();
+        latLongState.longitude = e.latLng.lng();
+        showMapMenu(e.pixel.x, e.pixel.y);
+    });
+    google.maps.event.addListener(map, 'click', hideMapMenu);
+    google.maps.event.addListener(map, 'dragstart', hideMapMenu);
 
     repopulateMapMarkers();
 }
@@ -355,6 +395,12 @@ AddModalManager.prototype.addReport = function () {
     });
 }
 
+AddModalManager.prototype.show = function (lat, long) {
+    this.get('latitude').val(lat);
+    this.get('longitude').val(long);
+    this.get('modal').modal('show');
+}
+
 function ProfileModalManager(id, fields, endpoint) {
     this.addMgr = new AddModalManager(id, fields, endpoint, 'PATCH', null);
     var that = this;
@@ -492,14 +538,18 @@ $(function () {
         navigateTo(e.originalEvent.state.screen);
     });
 
-    new AddModalManager('#addReport', ADD_REPORT_FIELDS, ADD_REPORT_ENDPOINT,
-                                      'POST', refreshReports);
-    new AddModalManager('#addPurityReport', ADD_PURITY_REPORT_FIELDS,
-                                            ADD_PURITY_REPORT_ENDPOINT,
-                                            'POST', refreshPurityReports);
+    addReportMgr = new AddModalManager('#addReport',
+                                       ADD_REPORT_FIELDS,
+                                       ADD_REPORT_ENDPOINT,
+                                       'POST', refreshReports);
+    addPurityMgr = new AddModalManager('#addPurityReport',
+                                       ADD_PURITY_REPORT_FIELDS,
+                                       ADD_PURITY_REPORT_ENDPOINT,
+                                       'POST', refreshPurityReports);
     new ProfileModalManager('#editProfile', PROFILE_FIELDS, PROFILE_ENDPOINT);
 
     setupHistoryReportModal();
+    setupMapMenu();
 
     repopulateReportsTable();
     repopulatePurityReportsTable();

@@ -65,6 +65,12 @@
     </div>
     {% if settings.GMAPS_API_KEY %}
         <div id="map"{% if active != "map" %} class="inactive"{% endif %}></div>
+        <div id="map-menu" class="inactive list-group">
+            <button id="map-menu-report" type="button" class="list-group-item">Add Report Here</button>
+            {% if perms.canteen.add_purityreport %}
+                <button id="map-menu-purity" type="button" class="list-group-item">Add Purity Report Here</button>
+            {% endif %}
+        </div>
     {% else %}
         <div id="map" class="container{% if active != "map" %} inactive{% endif %}">
             No Google Maps API keys configured.
@@ -287,6 +293,11 @@
             display: block;
             margin: 4px auto;
             text-align: center;
+        }
+        #map-menu {
+            height: 128px;
+            width: 200px;
+            position: absolute;
         }
         .inactive {
             display: none;
