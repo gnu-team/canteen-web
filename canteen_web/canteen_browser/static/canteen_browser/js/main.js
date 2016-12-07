@@ -107,11 +107,14 @@ function hideMapMenu() {
 
 function showMapMenu(x, y) {
     var menu = $('#map-menu');
+    var map = $('#map');
+    var maxX = map.innerWidth() - menu.width();
+    var maxY = map.innerHeight() - menu.height();
 
     menu.removeClass('inactive');
     menu.css({
-        left: x + 'px',
-        top: y + 'px'
+        left: Math.min(x, maxX) + 'px',
+        top: Math.min(y, maxY) + 'px'
     });
 }
 
