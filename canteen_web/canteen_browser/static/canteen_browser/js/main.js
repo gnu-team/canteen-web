@@ -60,7 +60,7 @@ function reportSummary(type, report, showDesc) {
     return result;
 }
 
-function drawReports(map, reports, icon, type) {
+function drawReports(map, reports, icon, type, showHistoryBtn) {
     for (var i = 0; i < reports.length; i++) {
         var report = reports[i];
         var marker = new google.maps.Marker({
@@ -75,7 +75,8 @@ function drawReports(map, reports, icon, type) {
         var infoWindow = new google.maps.InfoWindow({
             content: '<strong>' + reportSummary(type, report, false) +
                      '</strong><br>' + report.latitude + ', ' +
-                     report.longitude + '<p>' + safeDesc + '</p>'
+                     report.longitude + '<p>' + safeDesc + '</p>' +
+                     (showHistoryBtn? makeHistoryButton(report) : '')
         });
 
         // bind() is necessary to prevent the handler from referencing a
@@ -120,10 +121,10 @@ function repopulateMapMarkers() {
         markers.pop().setMap(null);
     }
 
-    drawReports(map, reports, REPORT_ICON, 'S');
+    drawReports(map, reports, REPORT_ICON, 'S', false);
 
     if (typeof purity_reports !== 'undefined')
-        drawReports(map, purity_reports, PURITY_REPORT_ICON, 'P');
+        drawReports(map, purity_reports, PURITY_REPORT_ICON, 'P', true);
 }
 
 // Callback invoked by the Google Maps api js once it's loaded
@@ -451,6 +452,23 @@ function repopulateReportsTable() {
     }
 }
 
+function historyButtonClicked(lat, long, year) {
+    historyReportState.latitude = lat;
+    historyReportState.longitude = long;
+    historyReportState.year = year;
+
+    $('#historyReport-modal').modal('show');
+    redrawHistoryReport();
+}
+
+function makeHistoryButton(report) {
+    var lat = report.latitude;
+    var long = report.longitude;
+    var year = new Date(report.date).getFullYear();
+
+    return '<button type="button" class="btn btn-default" aria-label="Purity History" title="Purity History" onclick="historyButtonClicked(' + lat + ', ' + long + ', ' + year + ')"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span></button>';
+}
+
 function repopulatePurityReportsTable() {
     var tbody = $('#purity_reports tbody');
 
@@ -474,16 +492,7 @@ function repopulatePurityReportsTable() {
         addTableCol(row, report.creator_name);
         addTableCol(row, report.description);
 
-        var historyBtn = $('<button type="button" class="btn btn-default" aria-label="Purity History" title="Purity History"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span></button>');
-        historyBtn.on('click', function (report) {
-            historyReportState.latitude = report.latitude;
-            historyReportState.longitude = report.longitude;
-            historyReportState.year = new Date(report.date).getFullYear();
-
-            $('#historyReport-modal').modal('show');
-            redrawHistoryReport();
-        }.bind(this, report));
-
+        var historyBtn = $(makeHistoryButton(report));
         row.append($('<td>').append(historyBtn));
 
         tbody.append(row);
