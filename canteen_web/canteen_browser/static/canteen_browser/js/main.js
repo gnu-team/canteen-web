@@ -335,7 +335,13 @@ AddModalManager.prototype.closeAddReport = function () {
     // Blank out fields
     this.forEachField(function (field, filter) {
         var input = this.get(field);
-        input.val('');
+
+        var blankedVal = '';
+        if (input.prop('tagName') == 'SELECT') {
+            blankedVal = input.children().first().val();
+        }
+        input.val(blankedVal);
+
         // Undo error state of the wrapping form-group if present
         input.parent().removeClass('has-error');
     });
